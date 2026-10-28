@@ -1,0 +1,360 @@
+---
+import {Image} from 'astro:assets'
+import bookIcon from '../assets/icons/book-open-solid-full.svg'
+import peopleIcon from '../assets/icons/people-group-solid-full.svg'
+import seedlingIcon from '../assets/icons/seedling-solid-full.svg'
+import missionDiagram from '../assets/images/CircleSplit_BLUE_reworked.png'
+import heroImage from '../assets/images/dhashero-1.jpeg'
+import EventList from '../components/EventList.astro'
+import BaseLayout from '../layouts/BaseLayout.astro'
+import {getEvents} from '../sanity/lib/queries'
+
+const events = await getEvents(4)
+
+const pillars = [
+  {
+    id: 'connections',
+    title: 'Connections',
+    text: 'We serve as a central hub for collaboration and networking, linking doctors with the support they need through partnerships with like-minded organisations. We connect and amplify organisations that support and research doctor health & wellbeing.',
+  },
+  {
+    id: 'advocacy',
+    title: 'Advocacy',
+    text: 'We are an authoritative voice on doctor and medical student health and wellbeing. Our goal is to drive impactful change by shaping policies, highlighting emerging issues, advocating for systemic improvements and targeted research and support. We work across media, regulatory bodies, and professional organisations ensuring the voices of doctors are heard.',
+  },
+  {
+    id: 'education',
+    title: 'Education',
+    text: 'We promote educational programs for doctors and other stakeholders. Our initiatives include tailored training on critical topics like being a doctor for doctors, substance and alcohol abuse, holistic wellbeing, and sustainable careers. We adapt successful international models to address local needs.',
+  },
+]
+
+const supportAreas = [
+  {
+    icon: peopleIcon,
+    title: 'Support for you and your colleagues',
+    text: 'Confidential, compassionate support for doctors and medical students facing personal, professional, or health challenges.',
+    href: '/support#support-for-you-and-your-colleagues',
+  },
+  {
+    icon: seedlingIcon,
+    title: 'Get involved in supporting doctors',
+    text: 'Join our network of doctors helping doctors. Volunteer for the roster, offer services, or contribute your expertise.',
+    href: '/support#get-involved',
+  },
+  {
+    icon: bookIcon,
+    title: 'Voices from the medical community',
+    text: 'Explore insights, interviews, and stories from doctors supporting doctors.',
+    href: '/support#articles-podcasts-books',
+  },
+]
+
+const organisationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Doctors Health Aotearoa',
+  description:
+    'Empowering doctor health and wellbeing through connections, education, advocacy - for the good of all New Zealanders',
+  url: Astro.site?.href,
+}
+---
+
+<BaseLayout transparentHeader jsonLd={organisationJsonLd}>
+  <section class="home-hero">
+    <Image
+      class="home-hero__image"
+      src={heroImage}
+      alt=""
+      widths={[800, 1400, 2000]}
+      sizes="100vw"
+      loading="eager"
+      fetchpriority="high"
+    />
+    <div class="container home-hero__content">
+      <p class="eyebrow">Welcome</p>
+      <h1 class="home-hero__title">Doctors Health Aotearoa</h1>
+      <p class="home-hero__lead">
+        Empowering doctor health and wellbeing through connections, education, advocacy - for the good of all New
+        Zealanders
+      </p>
+    </div>
+  </section>
+
+  <section class="section mission" aria-labelledby="mission-title">
+    <div class="container">
+      <h2 class="mission__title" id="mission-title">Our Mission</h2>
+      <div class="mission__body">
+        <div class="mission__diagram" data-reveal>
+          <Image
+            class="mission__image"
+            src={missionDiagram}
+            alt="Diagram of the DHA values: Connections, Advocacy and Education, around the words Healthy Doctors, Sustainable Work, Safe Workplaces"
+            widths={[450, 900, 1160]}
+            sizes="(max-width: 1080px) 450px, 580px"
+          />
+          <nav class="mission__segments" aria-label="Our pillars">
+            {
+              pillars.map((pillar) => (
+                <a class={`mission__segment mission__segment--${pillar.id}`} href={`/about#${pillar.id}`}>
+                  <span class="visually-hidden">{pillar.title}</span>
+                </a>
+              ))
+            }
+          </nav>
+        </div>
+        <dl class="mission__pillars">
+          {
+            pillars.map((pillar) => (
+              <div class="mission__pillar" data-reveal>
+                <dt class="mission__pillar-title">{pillar.title}</dt>
+                <dd class="mission__pillar-text">{pillar.text}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--alt" aria-labelledby="events-title">
+    <div class="container">
+      <div class="home-events__header">
+        <h2 class="home-events__title" id="events-title">Events</h2>
+        <a class="link-arrow" href="/events">View all</a>
+      </div>
+      <EventList events={events} />
+      <p class="home-events__cta">
+        Got an event you would like to list? <a href="/events#list-an-event">Tell us about it here!</a>
+      </p>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="support-title">
+    <div class="container">
+      <h2 class="support-teaser__title" id="support-title">How We Support the Medical Community</h2>
+      <p class="support-teaser__intro">
+        There are many support services and online resources that doctors and medical students can access for any level
+        of support you or your colleagues may need.
+      </p>
+      <ul class="support-teaser__list" role="list">
+        {
+          supportAreas.map((area) => (
+            <li class="support-teaser__item" data-reveal>
+              <Image class="support-teaser__icon" src={area.icon} alt="" width={40} height={40} />
+              <h3 class="support-teaser__item-title">
+                <a class="support-teaser__link" href={area.href}>
+                  {area.title}
+                </a>
+              </h3>
+              <p>{area.text}</p>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="support-teaser__more"><a class="link-arrow" href="/support">Learn more</a></p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Hero */
+  .home-hero {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 80svh;
+    padding-block: calc(var(--header-height) + var(--space-l)) var(--space-3xl);
+    overflow: hidden;
+    color: var(--color-text-inverse);
+  }
+
+  .home-hero__image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 0;
+  }
+
+  .home-hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(93deg, rgb(0 0 0 / 70%) 24%, transparent);
+  }
+
+  .home-hero__content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .home-hero__content > * {
+    max-width: 36rem;
+  }
+
+  .home-hero__title {
+    margin-block: var(--space-s);
+    color: var(--color-brand);
+    font-weight: 800;
+  }
+
+  .home-hero__lead {
+    font-size: 1.5rem;
+  }
+
+  /* Mission */
+  .mission__title {
+    margin-bottom: var(--space-l);
+  }
+
+  .mission__body {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xl);
+  }
+
+  .mission__diagram {
+    position: relative;
+    flex: 0 1 580px;
+  }
+
+  .mission__image {
+    width: 100%;
+  }
+
+  /* Invisible clickable wedges over the three segments of the diagram. */
+  .mission__segment {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+  }
+
+  .mission__segment--advocacy {
+    clip-path: polygon(100% 0%, 50% 0%, 50% 50%, 190% 120%);
+  }
+
+  .mission__segment--education {
+    clip-path: polygon(50% 50%, 0% 75%, 100% 140%, 100% 75%);
+  }
+
+  .mission__segment--connections {
+    clip-path: polygon(-80% 0%, 50% 0%, 50% 50%, -80% 120%);
+  }
+
+  .mission__segment:hover {
+    background: rgb(255 255 255 / 15%);
+  }
+
+  .mission__pillars {
+    flex: 1;
+    display: grid;
+    gap: var(--space-l);
+    margin: 0;
+  }
+
+  .mission__pillar-title {
+    margin-bottom: var(--space-xs);
+    color: var(--color-brand-dark);
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  .mission__pillar-text {
+    margin: 0;
+  }
+
+  @media (max-width: 1080px) {
+    .mission__body {
+      flex-direction: column;
+    }
+
+    .mission__diagram {
+      flex-basis: auto;
+      width: min(450px, 100%);
+    }
+  }
+
+  /* Events */
+  .home-events__header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: var(--space-l);
+  }
+
+  .home-events__title {
+    color: var(--color-brand-dark);
+  }
+
+  .home-events__cta {
+    margin-top: var(--space-l);
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  /* Support teaser */
+  .support-teaser__title {
+    margin-bottom: var(--space-m);
+    font-size: clamp(1.5rem, 3vw, 2rem);
+  }
+
+  .support-teaser__intro {
+    max-width: 48rem;
+  }
+
+  .support-teaser__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+    gap: var(--space-m);
+    margin: var(--space-l) 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .support-teaser__item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-s);
+    padding: var(--space-m) var(--space-s);
+    border-radius: var(--radius-m);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-card);
+    text-align: center;
+    transition: transform 0.2s ease;
+  }
+
+  .support-teaser__item:hover {
+    transform: translateY(-4px);
+  }
+
+  .support-teaser__icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .support-teaser__item-title {
+    font-size: 1.2rem;
+    line-height: 1.4;
+  }
+
+  .support-teaser__link {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .support-teaser__link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .support-teaser__more {
+    font-size: 1.25rem;
+    text-align: right;
+  }
+</style>

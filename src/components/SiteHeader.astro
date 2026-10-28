@@ -1,0 +1,248 @@
+---
+import {Image} from 'astro:assets'
+import logo from '../assets/images/DHASnakeLogo.png'
+import {navigation} from '../lib/navigation'
+
+interface Props {
+  /** Overlay the header on the page hero (home page) instead of a solid bar. */
+  transparent?: boolean
+}
+
+const {transparent = false} = Astro.props
+const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/'
+---
+
+<header class:list={['site-header', {'site-header--transparent': transparent}]}>
+  <div class="container site-header__inner">
+    <a class="site-header__brand" href="/" aria-label="Doctors Health Aotearoa home">
+      <Image class="site-header__logo" src={logo} alt="" width={90} height={90} densities={[1, 2]} />
+    </a>
+
+    <button
+      class="site-header__toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="site-menu"
+      data-menu-toggle
+    >
+      <span class="visually-hidden">Open menu</span>
+      <span class="site-header__toggle-bars" aria-hidden="true"></span>
+    </button>
+  </div>
+
+  <nav class="site-menu" id="site-menu" aria-label="Main" data-menu hidden>
+    <button class="site-menu__close" type="button" data-menu-close>
+      Close
+      <svg class="site-menu__close-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M6 6l12 12M18 6L6 18"></path>
+      </svg>
+    </button>
+    <ul class="site-menu__list">
+      {
+        navigation.map((item) => (
+          <li class="site-menu__item">
+            <a
+              class="site-menu__link"
+              href={item.href}
+              aria-current={item.href === currentPath ? 'page' : undefined}
+              {...(item.external && {target: '_blank', rel: 'noopener noreferrer'})}
+            >
+              {item.label}
+              {item.external ? (
+                <svg class="site-menu__icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" />
+                </svg>
+              ) : (
+                <svg class="site-menu__icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M9 6l6 6-6 6" />
+                </svg>
+              )}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+  <div class="site-menu__backdrop" data-menu-backdrop hidden></div>
+</header>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]')
+  const menu = document.querySelector<HTMLElement>('[data-menu]')
+  const backdrop = document.querySelector<HTMLElement>('[data-menu-backdrop]')
+  const close = document.querySelector<HTMLButtonElement>('[data-menu-close]')
+
+  function setOpen(open: boolean) {
+    if (!toggle || !menu || !backdrop) return
+    toggle.setAttribute('aria-expanded', String(open))
+    menu.hidden = !open
+    backdrop.hidden = !open
+    document.body.classList.toggle('has-open-menu', open)
+    if (open) menu.querySelector<HTMLElement>('a, button')?.focus()
+    else toggle.focus()
+  }
+
+  toggle?.addEventListener('click', () => setOpen(true))
+  close?.addEventListener('click', () => setOpen(false))
+  backdrop?.addEventListener('click', () => setOpen(false))
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && menu && !menu.hidden) setOpen(false)
+  })
+</script>
+
+<style>
+  .site-header {
+    position: relative;
+    z-index: 10;
+    height: var(--header-height);
+    background: var(--color-brand-dark);
+  }
+
+  .site-header--transparent {
+    position: absolute;
+    inset: 0 0 auto;
+    background: transparent;
+  }
+
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+  }
+
+  .site-header__logo {
+    width: auto;
+    height: 74px;
+  }
+
+  .site-header__toggle {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .site-header__toggle-bars,
+  .site-header__toggle-bars::before,
+  .site-header__toggle-bars::after {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: var(--color-text-inverse);
+    border-radius: 1px;
+  }
+
+  .site-header__toggle-bars {
+    position: relative;
+  }
+
+  .site-header__toggle-bars::before,
+  .site-header__toggle-bars::after {
+    content: '';
+    position: absolute;
+    left: 0;
+  }
+
+  .site-header__toggle-bars::before {
+    top: -7px;
+  }
+
+  .site-header__toggle-bars::after {
+    top: 7px;
+  }
+
+  .site-menu {
+    position: fixed;
+    inset: 0 0 0 auto;
+    z-index: 20;
+    width: min(450px, 100%);
+    overflow-y: auto;
+    background: var(--color-brand);
+    color: var(--color-text-inverse);
+    animation: slide-in 0.25s ease-out;
+  }
+
+  .site-menu[hidden],
+  .site-menu__backdrop[hidden] {
+    display: none;
+  }
+
+  .site-menu__backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 15;
+    background: rgb(0 0 0 / 40%);
+  }
+
+  .site-menu__close {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    margin: var(--space-m) var(--space-m) var(--space-m) auto;
+    padding: var(--space-xs);
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .site-menu__close-icon,
+  .site-menu__icon {
+    width: 20px;
+    height: 20px;
+    flex: none;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .site-menu__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--color-text-inverse);
+  }
+
+  .site-menu__link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-s);
+    padding: 20px 40px 20px 20px;
+    border-bottom: 1px solid var(--color-text-inverse);
+    color: inherit;
+    font-size: 1.125rem;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .site-menu__link:hover,
+  .site-menu__link[aria-current='page'] {
+    background: rgb(255 255 255 / 15%);
+  }
+
+  :global(body.has-open-menu) {
+    overflow: hidden;
+  }
+
+  @keyframes slide-in {
+    from {
+      transform: translateX(100%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .site-menu {
+      animation: none;
+    }
+  }
+</style>

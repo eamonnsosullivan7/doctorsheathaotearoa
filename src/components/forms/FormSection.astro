@@ -1,0 +1,32 @@
+---
+interface Props {
+  title: string
+}
+
+const {title} = Astro.props
+---
+
+<section class="section container container--narrow form-section" aria-labelledby="form-section-title">
+  <h2 class="form-section__title" id="form-section-title">{title}</h2>
+  <div class="form-section__intro"><slot name="intro" /></div>
+  <div class="form-section__card">
+    <slot />
+  </div>
+</section>
+
+<style>
+  .form-section__title {
+    color: var(--color-brand-dark);
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+  }
+
+  .form-section__intro {
+    margin-block: var(--space-s) var(--space-l);
+  }
+
+  .form-section__card {
+    padding: var(--space-m);
+    border-radius: var(--radius-m);
+    box-shadow: var(--shadow-card);
+  }
+</style>

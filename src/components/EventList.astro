@@ -1,0 +1,71 @@
+---
+import type {EventSummary} from '../sanity/lib/queries'
+import EventCard from './EventCard.astro'
+
+interface Props {
+  events: EventSummary[]
+}
+
+const {events} = Astro.props
+
+const partnerCalendars = [
+  {label: 'The Royal Australasian College of Physicians', href: 'https://www.racp.edu.au/news-and-events/all-events'},
+  {
+    label: 'The Australian and New Zealand Society of Occupational Medicine (NZ Branch)',
+    href: 'https://www.anzsom.org.au/state-branches/new-zealand',
+  },
+  {label: 'The Australian and New Zealand Society of Occupational Medicine (AUS Branch)', href: 'https://www.anzsom.org.au/'},
+  {label: 'Society of Occupational Medicine', href: 'https://www.som.org.uk/events'},
+]
+---
+
+{
+  events.length ? (
+    <ul class="event-list" role="list">
+      {events.map((event) => (
+        <li class="event-list__item">
+          <EventCard event={event} />
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <div class="event-list__empty">
+      <h3 class="event-list__empty-title">Events – coming soon!</h3>
+      <p>
+        Stay tuned for updates! We're working hard behind the scenes to bring you a range of engaging events that
+        inspire, connect, and make a real impact.
+      </p>
+      <p>In the meantime, check out the event calendars of some associated organisations:</p>
+      <ul>
+        {partnerCalendars.map((calendar) => (
+          <li>
+            <a href={calendar.href} target="_blank" rel="noopener noreferrer">
+              {calendar.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+<style>
+  .event-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(400px, 100%), 1fr));
+    gap: var(--space-m);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .event-list__empty {
+    display: grid;
+    gap: var(--space-s);
+    max-width: 48rem;
+  }
+
+  .event-list__empty ul {
+    margin: 0;
+  }
+</style>

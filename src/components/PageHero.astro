@@ -1,0 +1,28 @@
+---
+interface Props {
+  title: string
+}
+
+const {title} = Astro.props
+---
+
+<section class="page-hero">
+  <div class="container">
+    <h1 class="page-hero__title">{title}</h1>
+  </div>
+</section>
+
+<style>
+  .page-hero {
+    padding-block: var(--space-xl);
+    background: var(--color-brand-dark);
+    color: var(--color-text-inverse);
+    text-align: center;
+    clip-path: ellipse(70% 100% at 50% 0);
+  }
+
+  .page-hero__title {
+    font-size: clamp(2.25rem, 5vw, 3rem);
+    font-weight: 800;
+  }
+</style>

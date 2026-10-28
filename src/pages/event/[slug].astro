@@ -1,0 +1,228 @@
+---
+import type {GetStaticPaths} from 'astro'
+import RichText from '../../components/RichText.astro'
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import {formatDate} from '../../lib/dates'
+import {srcSet, urlFor} from '../../sanity/lib/image'
+import {type Event, getEventsWithContent} from '../../sanity/lib/queries'
+
+export const getStaticPaths = (async () => {
+  const events = await getEventsWithContent()
+  return events.map((event) => ({params: {slug: event.slug}, props: {event}}))
+}) satisfies GetStaticPaths
+
+interface Props {
+  event: Event
+}
+
+const {event} = Astro.props
+const ogImage = event.image ? urlFor(event.image).width(1200).height(630).fit('crop').url() : undefined
+
+const eventJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Event',
+  name: event.title,
+  startDate: event.startDate,
+  endDate: event.endDate ?? event.startDate,
+  description: event.shortDescription,
+  image: ogImage,
+  url: event.link,
+  location:
+    event.location?.toLowerCase() === 'online'
+      ? {'@type': 'VirtualLocation', url: event.link}
+      : {'@type': 'Place', name: event.location, address: event.location},
+  organizer: event.organisers ? {'@type': 'Organization', name: event.organisers} : undefined,
+}
+---
+
+<BaseLayout title={event.title} description={event.shortDescription} image={ogImage} jsonLd={eventJsonLd}>
+  <article class="section event">
+    <div class="container">
+      <header class="event__header">
+        <h1 class="event__title">{event.title}</h1>
+        {event.organisers && <p class="event__organisers">{event.organisers}</p>}
+      </header>
+
+      <div class="event__summary">
+        <div class="event__details">
+          <h2 class="event__details-title">Event details</h2>
+          {event.shortDescription && <p>{event.shortDescription}</p>}
+          <dl class="event__facts">
+            <div class="event__fact">
+              <dt>Start date</dt>
+              <dd><time datetime={event.startDate}>{formatDate(event.startDate)}</time></dd>
+            </div>
+            {
+              event.endDate && (
+                <div class="event__fact">
+                  <dt>End date</dt>
+                  <dd>
+                    <time datetime={event.endDate}>{formatDate(event.endDate)}</time>
+                  </dd>
+                </div>
+              )
+            }
+            {
+              event.location && (
+                <div class="event__fact">
+                  <dt>Location</dt>
+                  <dd>{event.location}</dd>
+                </div>
+              )
+            }
+            {
+              event.link && (
+                <div class="event__fact">
+                  <dt>Link</dt>
+                  <dd>
+                    <a href={event.link} target="_blank" rel="noopener noreferrer">
+                      {event.link.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}
+                    </a>
+                  </dd>
+                </div>
+              )
+            }
+          </dl>
+          {
+            event.link && (
+              <a class="button event__cta" href={event.link} target="_blank" rel="noopener noreferrer">
+                Event website
+              </a>
+            )
+          }
+        </div>
+
+        {
+          event.image && (
+            <img
+              class="event__image"
+              src={urlFor(event.image).width(1000).url()}
+              srcset={srcSet(event.image, [500, 1000, 1500])}
+              sizes="(max-width: 900px) 100vw, 560px"
+              alt={event.image.alt ?? ''}
+              decoding="async"
+            />
+          )
+        }
+      </div>
+
+      {
+        event.description && (
+          <section class="event__section" aria-labelledby="about-the-event">
+            <h2 class="event__section-title" id="about-the-event">
+              About the event
+            </h2>
+            <RichText value={event.description} />
+          </section>
+        )
+      }
+
+      {
+        event.report && (
+          <section class="event__section" aria-labelledby="event-report">
+            <h2 class="event__section-title" id="event-report">
+              A report on the event
+            </h2>
+            <RichText value={event.report} />
+          </section>
+        )
+      }
+
+      <p class="event__back"><a href="/events">← All events</a></p>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .event__header {
+    margin-bottom: var(--space-l);
+  }
+
+  .event__title {
+    font-size: clamp(2rem, 5vw, 3rem);
+  }
+
+  .event__organisers {
+    margin-top: var(--space-s);
+    color: var(--color-text-muted);
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+
+  .event__summary {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-xl);
+  }
+
+  .event__details {
+    display: grid;
+    flex: 1 1 50%;
+    gap: var(--space-s);
+    max-width: 500px;
+    padding: var(--space-l);
+    border-radius: 10px;
+    box-shadow: var(--shadow-card);
+  }
+
+  .event__details-title {
+    font-size: 1.25rem;
+  }
+
+  .event__facts {
+    display: grid;
+    gap: var(--space-xs);
+    margin: 0;
+    font-size: 0.875rem;
+  }
+
+  .event__fact {
+    display: grid;
+    grid-template-columns: 6rem 1fr;
+    gap: var(--space-xs);
+  }
+
+  .event__fact dt {
+    color: var(--color-text-muted);
+  }
+
+  .event__fact dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .event__cta {
+    justify-self: start;
+  }
+
+  .event__image {
+    flex: 1 1 40%;
+    min-width: 0;
+    border-radius: var(--radius-m);
+  }
+
+  .event__section {
+    max-width: 52rem;
+    margin-top: var(--space-xl);
+  }
+
+  .event__section-title {
+    margin-bottom: var(--space-s);
+    font-size: 1.25rem;
+  }
+
+  .event__back {
+    margin-top: var(--space-xl);
+  }
+
+  @media (max-width: 900px) {
+    .event__summary {
+      flex-direction: column-reverse;
+    }
+
+    .event__details {
+      max-width: none;
+      width: 100%;
+    }
+  }
+</style>

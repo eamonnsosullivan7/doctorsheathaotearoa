@@ -1,0 +1,64 @@
+---
+import Web3Form from './Web3Form.astro'
+
+interface Props {
+  subject: string
+  /** Show the "reason for getting in touch" select (contact page only). */
+  showReason?: boolean
+}
+
+const {subject, showReason = false} = Astro.props
+
+const reasons = [
+  {value: 'Seeking help', label: 'I am seeking help (individual, peer, or family member)'},
+  {value: 'Joining the panel', label: 'I am interested in joining the DHA panel of doctors providing assistance'},
+  {value: 'Other', label: 'Other'},
+]
+---
+
+<Web3Form subject={subject}>
+  <div class="form__row">
+    <div class="form__field">
+      <label class="form__label" for="first-name">First name</label>
+      <input class="form__input" id="first-name" name="first_name" type="text" autocomplete="given-name" maxlength="256" required />
+    </div>
+    <div class="form__field">
+      <label class="form__label" for="last-name">Last name</label>
+      <input class="form__input" id="last-name" name="last_name" type="text" autocomplete="family-name" maxlength="256" required />
+    </div>
+  </div>
+
+  <div class="form__row">
+    <div class="form__field">
+      <label class="form__label" for="email">Email</label>
+      <input class="form__input" id="email" name="email" type="email" autocomplete="email" maxlength="256" required />
+    </div>
+    <div class="form__field">
+      <label class="form__label" for="phone">Phone <span class="form__optional">(optional)</span></label>
+      <input class="form__input" id="phone" name="phone" type="tel" autocomplete="tel" maxlength="256" />
+    </div>
+  </div>
+
+  {
+    showReason && (
+      <div class="form__field">
+        <label class="form__label" for="reason">
+          Reason for getting in touch
+        </label>
+        <select class="form__select" id="reason" name="reason" required>
+          <option value="" disabled selected>
+            Please choose an option
+          </option>
+          {reasons.map((reason) => (
+            <option value={reason.value}>{reason.label}</option>
+          ))}
+        </select>
+      </div>
+    )
+  }
+
+  <div class="form__field">
+    <label class="form__label" for="message">Message</label>
+    <textarea class="form__textarea" id="message" name="message" maxlength="5000" required></textarea>
+  </div>
+</Web3Form>

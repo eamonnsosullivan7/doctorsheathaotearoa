@@ -1,0 +1,29 @@
+---
+import '../../styles/form.css'
+
+interface Props {
+  /** Email subject line Web3Forms uses for the notification. */
+  subject: string
+  submitLabel?: string
+  id?: string
+}
+
+const {subject, submitLabel = 'Send message', id} = Astro.props
+
+// Set PUBLIC_WEB3FORMS_ACCESS_KEY in .env (see .env.example).
+const accessKey = import.meta.env.PUBLIC_WEB3FORMS_ACCESS_KEY ?? ''
+---
+
+<form class="form" id={id} action="https://api.web3forms.com/submit" method="POST" data-web3form>
+  <input type="hidden" name="access_key" value={accessKey} />
+  <input type="hidden" name="subject" value={subject} />
+  <input type="hidden" name="from_name" value="Doctors Health Aotearoa website" />
+  <input class="form__honeypot" type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" />
+
+  <slot />
+
+  <div class="form__actions">
+    <button class="button button--large" type="submit">{submitLabel}</button>
+  </div>
+  <p class="form__status" role="status" aria-live="polite" data-form-status></p>
+</form>

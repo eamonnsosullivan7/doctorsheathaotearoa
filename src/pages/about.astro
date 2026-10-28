@@ -1,0 +1,437 @@
+---
+import {Image} from 'astro:assets'
+import connectionsImage from '../assets/images/AdobeStock_560072776-1.jpeg'
+import advocacyImage from '../assets/images/dha-advocacy.jpeg'
+import kiwiImage from '../assets/images/kiwi.jpg'
+import educationImage from '../assets/images/national-cancer-institute-NFvdKIhxYlU-unsplash-1.jpg'
+import PageHero from '../components/PageHero.astro'
+import RichText from '../components/RichText.astro'
+import BaseLayout from '../layouts/BaseLayout.astro'
+import {urlFor} from '../sanity/lib/image'
+import {getTeam} from '../sanity/lib/queries'
+
+const team = await getTeam()
+
+const pillars = [
+  {
+    id: 'connections',
+    title: 'Connections',
+    image: connectionsImage,
+    objectives: [
+      'Build partnerships with organisations that share our vision for enhancing doctors wellbeing to support them in their personal and professional lives.',
+      'Enable doctors to connect with one another and access tailored solutions for their unique challenges.',
+      'Facilitating peer support and linking doctors with assessment and treatment options.',
+    ],
+  },
+  {
+    id: 'advocacy',
+    title: 'Advocacy',
+    image: advocacyImage,
+    objectives: [
+      'Be a leading voice on the systemic issues impacting doctor’s mental, physical and emotional health.',
+      "Advocate for reforms that improve working conditions, support systems, and healthcare standards for doctors by engaging with media, regulatory bodies, and professional organisations to ensure doctors' needs are prioritized in public and policy discussions.",
+    ],
+  },
+  {
+    id: 'education',
+    title: 'Education',
+    image: educationImage,
+    objectives: [
+      "Foster a supportive culture within the medical community that confronts the stigma surrounding doctors' health needs and empowering them to prioritize their wellbeing.",
+      'Raise awareness of various resources, workshops and support services, that provide doctors with the knowledge and skills to address critical issues impacting their lives.',
+    ],
+  },
+]
+---
+
+<BaseLayout title="About" description="Our mission, history and the team behind Doctors Health Aotearoa.">
+  <PageHero title="About Us" />
+
+  <section class="section--compact" id="mission" aria-labelledby="mission-title">
+    <div class="container statement">
+      <h2 class="statement__title" id="mission-title">Our Mission</h2>
+      <p class="statement__text">
+        Our mission is to improve the health and wellbeing of doctors and medical students for the good of all New
+        Zealanders.
+      </p>
+    </div>
+  </section>
+
+  <section class="section" aria-label="Our pillars">
+    <ul class="container pillars" role="list">
+      {
+        pillars.map((pillar) => (
+          <li class="flip-card" id={pillar.id} data-flip-card data-reveal>
+            <div class="flip-card__inner">
+              <div class="flip-card__face flip-card__face--front">
+                <Image class="flip-card__background" src={pillar.image} alt="" widths={[400, 800]} sizes="(max-width: 900px) 90vw, 360px" />
+                <h3 class="flip-card__title">{pillar.title}</h3>
+                <button class="flip-card__toggle" type="button" aria-expanded="false" data-flip-open>
+                  <span class="visually-hidden">Show {pillar.title} objectives</span>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7v10M7 12h10" /></svg>
+                </button>
+              </div>
+              <div class="flip-card__face flip-card__face--back" inert>
+                <div class="flip-card__back-header">
+                  <Image class="flip-card__thumb" src={pillar.image} alt="" width={64} height={64} />
+                  <div>
+                    <h3 class="flip-card__heading">{pillar.title}</h3>
+                    <p class="flip-card__subheading">Our objectives</p>
+                  </div>
+                </div>
+                <ul class="flip-card__objectives">
+                  {pillar.objectives.map((objective) => (
+                    <li>{objective}</li>
+                  ))}
+                </ul>
+                <button class="flip-card__toggle" type="button" data-flip-close>
+                  <span class="visually-hidden">Hide {pillar.title} objectives</span>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 12h10" /></svg>
+                </button>
+              </div>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="section section--alt" id="history" aria-labelledby="history-title">
+    <div class="container history">
+      <div class="history__text">
+        <p class="eyebrow">Our History</p>
+        <h2 class="history__title" id="history-title">Doctors Health Aotearoa</h2>
+        <p>
+          The Doctors Health Advisory Service (DHAS) was founded in response to a recognised need for dedicated support
+          services for doctors seeking guidance during challenging times. For over 30 years, DHAS has been at the forefront
+          of addressing the psychological and addiction-related challenges faced by doctors.
+        </p>
+        <p>
+          Initially led by Dr Robert Crawford and Dr Edwin Whiteside, DHAS originally operated as an 0800 helpline, with a
+          network of skilled clinicians offering early assessments, advice, and referrals. Through this network the
+          organisation has supported thousands of practitioners.
+        </p>
+        <p>
+          Through presentations at medical schools and conferences, DHAS actively encouraged doctors, both practicing and
+          future, to prioritize their health and well-being.
+        </p>
+        <p>
+          In 2018, DHAS received a generous bequest from Dr Garry Seifert-Jones, a former beneficiary of its services. This
+          enabled the establishment of the Doctors Health Advisory Charitable Trust. This expansion marked a shift toward a
+          more comprehensive, preventative, and educational approach, broadening DHAS’s reach beyond individual helpline
+          services.
+        </p>
+        <p>
+          As of 2024, the Doctors' Health Advisory Service has rebranded as Doctors Health Aotearoa (DHA), focusing on three
+          core pillars: <strong>connection, advocacy, and education</strong>. It is New Zealand's only independent umbrella
+          organisation for doctors and medical students, and remains steadfast in its commitment to supporting the sector.
+        </p>
+      </div>
+      <Image class="history__image" src={kiwiImage} alt="Kiwi crossing road sign" widths={[400, 800]} sizes="(max-width: 900px) 90vw, 400px" />
+    </div>
+  </section>
+
+  <section class="section" id="team" aria-labelledby="team-title">
+    <div class="container">
+      <h2 class="team__title" id="team-title">Meet Our Team</h2>
+      <ul class="team" role="list">
+        {
+          team.map((member) => (
+            <li class="team-member" data-reveal>
+              <div class="team-member__text">
+                <h3 class="team-member__name">{member.name}</h3>
+                {member.role && <p class="team-member__role">{member.role}</p>}
+                <RichText class="team-member__bio" value={member.bio} />
+              </div>
+              {member.photo && (
+                <img
+                  class="team-member__photo"
+                  src={urlFor(member.photo).width(600).height(800).fit('crop').url()}
+                  alt={member.photo.alt ?? member.name}
+                  width="300"
+                  height="400"
+                  loading="lazy"
+                  decoding="async"
+                />
+              )}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-flip-card]').forEach((card) => {
+    const front = card.querySelector<HTMLElement>('.flip-card__face--front')!
+    const back = card.querySelector<HTMLElement>('.flip-card__face--back')!
+    const open = card.querySelector<HTMLButtonElement>('[data-flip-open]')!
+    const close = card.querySelector<HTMLButtonElement>('[data-flip-close]')!
+
+    function setFlipped(flipped: boolean) {
+      card.classList.toggle('flip-card--flipped', flipped)
+      open.setAttribute('aria-expanded', String(flipped))
+      front.inert = flipped
+      back.inert = !flipped
+      ;(flipped ? close : open).focus({preventScroll: true})
+    }
+
+    open.addEventListener('click', () => setFlipped(true))
+    close.addEventListener('click', () => setFlipped(false))
+  })
+</script>
+
+<style>
+  /* Mission statement */
+  .statement {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-xl);
+  }
+
+  .statement__title {
+    flex: none;
+    font-size: 1.75rem;
+  }
+
+  .statement__text {
+    max-width: 36rem;
+    padding-left: var(--space-xl);
+    border-left: 1px solid var(--color-border-strong);
+    font-size: 1.25rem;
+  }
+
+  @media (max-width: 767px) {
+    .statement {
+      flex-direction: column;
+      gap: var(--space-m);
+      text-align: center;
+    }
+
+    .statement__text {
+      padding: var(--space-m) 0 0;
+      border-left: 0;
+      border-top: 1px solid var(--color-border-strong);
+    }
+  }
+
+  /* Flip cards */
+  .pillars {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+    gap: var(--space-m);
+    margin-block: 0;
+    list-style: none;
+  }
+
+  .flip-card {
+    perspective: 1000px;
+    scroll-margin-top: var(--space-l);
+  }
+
+  .flip-card__inner {
+    position: relative;
+    height: 600px;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-card);
+    transform-style: preserve-3d;
+    transition: transform 0.6s ease;
+  }
+
+  .flip-card--flipped .flip-card__inner {
+    transform: rotateY(180deg);
+  }
+
+  .flip-card__face {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-radius: var(--radius-xl);
+    backface-visibility: hidden;
+  }
+
+  .flip-card__face--front {
+    padding: 72px 40px;
+    color: var(--color-text-inverse);
+  }
+
+  .flip-card__face--front::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(180deg, rgb(0 0 0 / 55%), transparent 45%);
+  }
+
+  .flip-card__background {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .flip-card__title {
+    position: relative;
+    z-index: 2;
+    font-size: 2rem;
+  }
+
+  .flip-card__face--back {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-s);
+    padding: 30px var(--space-m) var(--space-m);
+    background: var(--color-surface);
+    transform: rotateY(180deg);
+  }
+
+  .flip-card__back-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-s);
+  }
+
+  .flip-card__thumb {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .flip-card__heading {
+    font-size: 1.5rem;
+  }
+
+  .flip-card__subheading {
+    color: var(--color-text-muted);
+  }
+
+  .flip-card__objectives {
+    display: grid;
+    gap: var(--space-s);
+    padding-left: 1.2em;
+  }
+
+  .flip-card__toggle {
+    position: absolute;
+    right: var(--space-m);
+    bottom: var(--space-m);
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: var(--color-surface);
+    color: var(--color-text);
+    cursor: pointer;
+  }
+
+  .flip-card__face--back .flip-card__toggle {
+    background: var(--color-text);
+    color: var(--color-surface);
+  }
+
+  .flip-card__toggle svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .flip-card__inner {
+      transition: none;
+    }
+  }
+
+  /* History */
+  .history {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xl);
+  }
+
+  .history__text {
+    display: grid;
+    flex: 1;
+    gap: var(--space-s);
+    color: var(--color-text-muted);
+  }
+
+  .history__title {
+    color: var(--color-brand-dark);
+    font-size: 1.5rem;
+  }
+
+  .history__image {
+    flex: 0 1 400px;
+    border-radius: var(--radius-m);
+  }
+
+  @media (max-width: 900px) {
+    .history {
+      flex-direction: column;
+    }
+  }
+
+  /* Team */
+  .team__title {
+    text-align: center;
+  }
+
+  .team {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .team-member {
+    display: flex;
+    align-items: center;
+    gap: var(--space-m);
+    margin-top: 40px;
+    padding-top: 40px;
+    border-top: 1px solid var(--color-border-strong);
+  }
+
+  .team-member__text {
+    flex: 1;
+  }
+
+  .team-member__name {
+    font-size: 1.25rem;
+  }
+
+  .team-member__role {
+    margin-bottom: var(--space-s);
+    font-size: 1.125rem;
+  }
+
+  .team-member__photo {
+    width: 300px;
+    max-width: 35%;
+    height: 400px;
+    object-fit: cover;
+  }
+
+  @media (max-width: 767px) {
+    .team-member {
+      flex-direction: column-reverse;
+      align-items: flex-start;
+    }
+
+    .team-member__photo {
+      max-width: 100%;
+      height: auto;
+      aspect-ratio: 3 / 4;
+    }
+  }
+</style>

@@ -1,0 +1,261 @@
+---
+import PageHero from '../components/PageHero.astro'
+import RichText from '../components/RichText.astro'
+import BaseLayout from '../layouts/BaseLayout.astro'
+import {getSupportCategories} from '../sanity/lib/queries'
+
+const categories = await getSupportCategories()
+---
+
+<BaseLayout
+  title="Support"
+  description="Support services and online resources for doctors and medical students in Aotearoa New Zealand."
+>
+  <PageHero title="Services and Support" />
+
+  <div class="section container container--narrow">
+    <p class="support__intro">
+      There are many support services and online resources that doctors and medical students can access for any level of
+      support that you or your colleagues may need.
+    </p>
+
+    <nav class="support__toc" aria-label="On this page">
+      <ul role="list">
+        {
+          categories.map((category) => (
+            <li>
+              <a class="support__toc-link" href={`#${category.slug}`}>
+                {category.title}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    {
+      categories.map((category) => (
+        <section class="support-category" id={category.slug} aria-labelledby={`${category.slug}-title`}>
+          <h2 class="support-category__title" id={`${category.slug}-title`}>
+            {category.title}
+          </h2>
+          {category.intro && <p class="support-category__intro">{category.intro}</p>}
+
+          {category.resources.length ? (
+            <div class="support-category__list">
+              {category.resources.map((resource) => (
+                <details class="resource" id={resource.slug} name={category.slug}>
+                  <summary class="resource__summary">
+                    <span class="resource__title">{resource.title}</span>
+                    <svg class="resource__icon" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M12 5v14M5 12h14" />
+                    </svg>
+                  </summary>
+                  <div class="resource__body">
+                    <RichText value={resource.body} />
+                    {resource.links?.length ? (
+                      <ul class="resource__links" role="list">
+                        {resource.links.map((link) => (
+                          <li>
+                            <a class="resource__link" href={link.url} target="_blank" rel="noopener noreferrer">
+                              {link.label}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : null}
+                    {resource.details?.body && (
+                      <details class="resource__details">
+                        <summary class="resource__details-summary">{resource.details.title ?? 'More information'}</summary>
+                        <RichText value={resource.details.body} />
+                      </details>
+                    )}
+                  </div>
+                </details>
+              ))}
+            </div>
+          ) : (
+            <p class="support-category__empty">
+              We are still gathering services and resources to share. Please <a href="/contact">get in touch</a> if you
+              would like to recommend a service.
+            </p>
+          )}
+        </section>
+      ))
+    }
+
+    <aside class="support__recommend">
+      <h2 class="support__recommend-title">Know a service we should list?</h2>
+      <p>
+        If you work in a service that supports doctors' or medical students' wellbeing, we'd be happy to publish its
+        details here.
+      </p>
+      <a class="button" href="/contact">Get in touch</a>
+    </aside>
+  </div>
+</BaseLayout>
+
+<script>
+  // Open the resource named in the URL hash, e.g. /support#unions
+  function openFromHash() {
+    const target = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)))
+    if (target instanceof HTMLDetailsElement) {
+      target.open = true
+      target.scrollIntoView()
+    }
+  }
+  openFromHash()
+  window.addEventListener('hashchange', openFromHash)
+</script>
+
+<style>
+  .support__intro {
+    font-size: 1.125rem;
+  }
+
+  .support__toc ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    margin: var(--space-l) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .support__toc-link {
+    display: inline-block;
+    padding: var(--space-xs) var(--space-s);
+    border: 1px solid var(--color-brand-dark);
+    border-radius: 999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .support__toc-link:hover {
+    background: var(--color-brand-dark);
+    color: var(--color-text-inverse);
+  }
+
+  .support-category {
+    margin-top: var(--space-2xl);
+    scroll-margin-top: var(--space-l);
+  }
+
+  .support-category__title {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    color: var(--color-brand-dark);
+  }
+
+  .support-category__intro {
+    margin-top: var(--space-xs);
+    color: var(--color-text-muted);
+  }
+
+  .support-category__list {
+    margin-top: var(--space-m);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .support-category__empty {
+    margin-top: var(--space-m);
+  }
+
+  .resource {
+    border-bottom: 1px solid var(--color-border);
+    scroll-margin-top: var(--space-l);
+  }
+
+  .resource__summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-s);
+    padding-block: var(--space-s);
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .resource__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .resource__title {
+    font-size: 1.125rem;
+    font-weight: 700;
+  }
+
+  .resource__summary:hover .resource__title {
+    color: var(--color-brand-dark);
+  }
+
+  .resource__icon {
+    flex: none;
+    width: 32px;
+    height: 32px;
+    padding: 6px;
+    border-radius: 50%;
+    background: var(--color-surface-alt);
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    transition: transform 0.2s ease;
+  }
+
+  .resource[open] .resource__icon {
+    transform: rotate(45deg);
+  }
+
+  .resource__body {
+    display: grid;
+    gap: var(--space-s);
+    padding-bottom: var(--space-m);
+  }
+
+  .resource__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .resource__link {
+    display: inline-block;
+    padding: var(--space-2xs) var(--space-s);
+    border-radius: var(--radius-s);
+    background: var(--color-surface-alt);
+    font-size: 0.875rem;
+  }
+
+  .resource__details {
+    padding: var(--space-s);
+    border-radius: var(--radius-m);
+    background: var(--color-surface-alt);
+  }
+
+  .resource__details-summary {
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .resource__details[open] .resource__details-summary {
+    margin-bottom: var(--space-s);
+  }
+
+  .support__recommend {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-s);
+    margin-top: var(--space-2xl);
+    padding: var(--space-l);
+    border-radius: var(--radius-m);
+    background: var(--color-surface-alt);
+  }
+
+  .support__recommend-title {
+    font-size: 1.25rem;
+  }
+</style>

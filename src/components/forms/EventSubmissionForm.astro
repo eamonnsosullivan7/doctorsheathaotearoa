@@ -1,0 +1,54 @@
+---
+import Web3Form from './Web3Form.astro'
+---
+
+<Web3Form subject="New event listing request" submitLabel="Submit event">
+  <div class="form__row">
+    <div class="form__field">
+      <label class="form__label" for="event-title">Event title</label>
+      <input class="form__input" id="event-title" name="event_title" type="text" maxlength="256" required />
+    </div>
+    <div class="form__field">
+      <label class="form__label" for="event-organisers">Event organisers</label>
+      <input class="form__input" id="event-organisers" name="organisers" type="text" maxlength="256" required />
+    </div>
+  </div>
+
+  <div class="form__row">
+    <div class="form__field">
+      <label class="form__label" for="event-start">Start date &amp; time</label>
+      <input class="form__input" id="event-start" name="start" type="datetime-local" required />
+    </div>
+    <div class="form__field">
+      <label class="form__label" for="event-end">End date &amp; time <span class="form__optional">(optional)</span></label>
+      <input class="form__input" id="event-end" name="end" type="datetime-local" />
+    </div>
+  </div>
+
+  <div class="form__row">
+    <div class="form__field">
+      <label class="form__label" for="event-location">Location</label>
+      <input class="form__input" id="event-location" name="location" type="text" maxlength="256" placeholder="Venue and city, or Online" required />
+    </div>
+    <div class="form__field">
+      <label class="form__label" for="event-audience">Target audience</label>
+      <input class="form__input" id="event-audience" name="audience" type="text" maxlength="256" required />
+    </div>
+  </div>
+
+  <div class="form__row">
+    <div class="form__field">
+      <label class="form__label" for="event-link">Event link <span class="form__optional">(optional)</span></label>
+      <input class="form__input" id="event-link" name="link" type="url" maxlength="512" placeholder="https://" />
+    </div>
+    <div class="form__field">
+      <label class="form__label" for="event-email">Your email</label>
+      <input class="form__input" id="event-email" name="email" type="email" autocomplete="email" maxlength="256" required />
+    </div>
+  </div>
+
+  <div class="form__field">
+    <label class="form__label" for="event-description">Event description</label>
+    <textarea class="form__textarea" id="event-description" name="description" maxlength="5000" required></textarea>
+  </div>
+</Web3Form>

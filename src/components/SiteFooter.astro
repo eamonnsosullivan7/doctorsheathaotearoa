@@ -1,0 +1,113 @@
+---
+import {Image} from 'astro:assets'
+import logo from '../assets/images/DHASnakeLogo.png'
+import {footerNavigation} from '../lib/navigation'
+---
+
+<footer class="site-footer">
+  <div class="container site-footer__inner">
+    <a class="site-footer__brand" href="/" aria-label="Doctors Health Aotearoa home">
+      <Image class="site-footer__logo" src={logo} alt="" width={300} densities={[1, 2]} />
+    </a>
+    <nav class="site-footer__nav" aria-label="Footer">
+      {
+        footerNavigation.map((group) => (
+          <div class="site-footer__group">
+            <h2 class="site-footer__title">{group.title}</h2>
+            <ul class="site-footer__list">
+              {group.links.map((link) => (
+                <li>
+                  <a class="site-footer__link" href={link.href}>
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </nav>
+  </div>
+  <div class="container site-footer__legal">
+    <p>© {new Date().getFullYear()} Doctors Health Aotearoa</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--color-brand-dark);
+    color: var(--color-text-inverse);
+    padding-block: var(--space-xl) var(--space-m);
+  }
+
+  .site-footer__inner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xl);
+  }
+
+  .site-footer__logo {
+    width: 300px;
+    max-width: 100%;
+  }
+
+  .site-footer__nav {
+    display: grid;
+    flex: 1;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-l);
+  }
+
+  .site-footer__title {
+    margin-bottom: 12px;
+    font-size: 0.875rem;
+    letter-spacing: 1px;
+    line-height: 16px;
+    text-transform: uppercase;
+  }
+
+  .site-footer__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .site-footer__list li + li {
+    margin-top: 12px;
+  }
+
+  .site-footer__link {
+    color: inherit;
+    font-size: 0.875rem;
+    text-decoration: none;
+  }
+
+  .site-footer__link:hover {
+    text-decoration: underline;
+  }
+
+  .site-footer__legal {
+    margin-top: var(--space-l);
+    padding-top: var(--space-m);
+    border-top: 1px solid rgb(255 255 255 / 20%);
+    font-size: 0.75rem;
+    opacity: 0.8;
+  }
+
+  @media (max-width: 991px) {
+    .site-footer__inner {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .site-footer__logo {
+      width: 200px;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .site-footer__nav {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

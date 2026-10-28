@@ -1,0 +1,18 @@
+---
+import ContactForm from '../components/forms/ContactForm.astro'
+import FormSection from '../components/forms/FormSection.astro'
+import PageHero from '../components/PageHero.astro'
+import BaseLayout from '../layouts/BaseLayout.astro'
+---
+
+<BaseLayout title="Donate" description="Support Doctors Health Aotearoa with a donation or bequest.">
+  <PageHero title="Donations & Bequests" />
+
+  <FormSection title="Support Doctors Health Aotearoa">
+    <p slot="intro">
+      The DHAS Trust is a registered charity (2722392) with the NZ Charities Commission and IRD. As such, any donations
+      are tax deductible. To find out more about making a donation or bequest please contact us via the form below.
+    </p>
+    <ContactForm subject="New donation / bequest enquiry" />
+  </FormSection>
+</BaseLayout>

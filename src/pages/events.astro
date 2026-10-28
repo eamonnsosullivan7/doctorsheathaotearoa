@@ -1,0 +1,50 @@
+---
+import EventList from '../components/EventList.astro'
+import EventSubmissionForm from '../components/forms/EventSubmissionForm.astro'
+import PageHero from '../components/PageHero.astro'
+import BaseLayout from '../layouts/BaseLayout.astro'
+import {getEvents} from '../sanity/lib/queries'
+
+const events = await getEvents()
+---
+
+<BaseLayout title="Events" description="Upcoming and past events on doctor health and wellbeing in Aotearoa and beyond.">
+  <PageHero title="Events" />
+
+  <section class="section" aria-label="Event listing">
+    <div class="container">
+      <EventList events={events} />
+    </div>
+  </section>
+
+  <section class="section section--alt" id="list-an-event" aria-labelledby="list-an-event-title">
+    <div class="container container--narrow">
+      <h2 class="list-event__title" id="list-an-event-title">Hosting an event? Let us know!</h2>
+      <p class="list-event__intro">
+        Share details about your upcoming event and connect with others in the healthcare community.
+      </p>
+      <div class="list-event__card">
+        <EventSubmissionForm />
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .list-event__title {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    text-align: center;
+  }
+
+  .list-event__intro {
+    margin-block: var(--space-s) var(--space-l);
+    text-align: center;
+  }
+
+  .list-event__card {
+    padding: var(--space-m);
+    border-radius: var(--radius-m);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-card);
+  }
+</style>

@@ -1,0 +1,79 @@
+/* Form block: shared by the contact, donation and event submission forms. */
+
+.form {
+  display: grid;
+  gap: var(--space-m);
+}
+
+.form__row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  gap: var(--space-m);
+}
+
+.form__field {
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.form__label {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.form__optional {
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+
+.form__input,
+.form__select,
+.form__textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-s);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 0.875rem;
+}
+
+.form__input:focus,
+.form__select:focus,
+.form__textarea:focus {
+  border-color: var(--color-brand-dark);
+  outline: 2px solid var(--color-brand);
+  outline-offset: 0;
+}
+
+.form__textarea {
+  min-height: 150px;
+  resize: vertical;
+}
+
+.form__honeypot {
+  display: none;
+}
+
+.form__actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.form__status {
+  padding: var(--space-s);
+  border-radius: var(--radius-s);
+}
+
+.form__status:empty {
+  display: none;
+}
+
+.form__status--success {
+  background: var(--color-success-bg);
+}
+
+.form__status--error {
+  background: var(--color-error-bg);
+}

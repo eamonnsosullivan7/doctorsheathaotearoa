@@ -1,0 +1,18 @@
+---
+import ContactForm from '../components/forms/ContactForm.astro'
+import FormSection from '../components/forms/FormSection.astro'
+import PageHero from '../components/PageHero.astro'
+import BaseLayout from '../layouts/BaseLayout.astro'
+---
+
+<BaseLayout title="Contact" description="Get in touch with Doctors Health Aotearoa.">
+  <PageHero title="Contact Us" />
+
+  <FormSection title="Send us a message">
+    <p slot="intro">
+      If you'd like to get in touch, please either use the webform below, or email our Medical Director on
+      <a href="mailto:medicaldirector-DHA@outlook.co.nz">medicaldirector-DHA@outlook.co.nz</a>.
+    </p>
+    <ContactForm subject="New message from the website contact form" showReason />
+  </FormSection>
+</BaseLayout>

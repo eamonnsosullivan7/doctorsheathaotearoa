@@ -1,0 +1,26 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+---
+
+<BaseLayout title="Page not found">
+  <section class="section container not-found">
+    <h1 class="not-found__title">Page not found</h1>
+    <p>The page you are looking for doesn't exist or has been moved.</p>
+    <a class="button" href="/">Go home</a>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-m);
+    min-height: 50vh;
+    align-content: center;
+    text-align: center;
+  }
+
+  .not-found__title {
+    font-size: clamp(2rem, 5vw, 3rem);
+  }
+</style>
