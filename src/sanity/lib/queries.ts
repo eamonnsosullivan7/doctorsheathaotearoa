@@ -19,6 +19,7 @@ export interface EventSummary {
   shortDescription?: string
   image?: SanityImage
   hostLogo?: SanityImage
+  hasReport: boolean
 }
 
 export interface Event extends EventSummary {
@@ -74,7 +75,7 @@ export interface SupportCategory {
 
 const eventSummaryFields = `
   _id, title, "slug": slug.current, startDate, endDate, location, organisers, link,
-  shortDescription, image, hostLogo
+  shortDescription, image, hostLogo, "hasReport": defined(report)
 `
 
 export function getEvents(limit?: number): Promise<EventSummary[]> {

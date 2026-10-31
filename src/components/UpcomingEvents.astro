@@ -1,0 +1,36 @@
+---
+import type {EventSummary} from '../sanity/lib/queries'
+import EventCard from './EventCard.astro'
+import EventList from './EventList.astro'
+
+interface Props {
+  /** Upcoming events, soonest first. */
+  events: EventSummary[]
+}
+
+const [next, ...later] = Astro.props.events
+---
+
+{/* The next event is featured. A single follow-up event is shown wide too, so
+    it doesn't sit alone at half width; two or more sit side by side. */}
+{
+  next ? (
+    <div class="upcoming-events">
+      <EventCard event={next} featured />
+      {later.length === 1 && <EventCard event={later[0]} wide />}
+      {later.length > 1 && <EventList events={later} />}
+    </div>
+  ) : (
+    <>
+      <EventList events={[]} />
+      <slot name="empty" />
+    </>
+  )
+}
+
+<style>
+  .upcoming-events {
+    display: grid;
+    gap: var(--space-m);
+  }
+</style>

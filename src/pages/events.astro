@@ -1,23 +1,44 @@
 ---
-import EventList from '../components/EventList.astro'
 import EventSubmissionForm from '../components/forms/EventSubmissionForm.astro'
 import PageHero from '../components/PageHero.astro'
+import PastEventList from '../components/PastEventList.astro'
+import UpcomingEvents from '../components/UpcomingEvents.astro'
 import BaseLayout from '../layouts/BaseLayout.astro'
+import {splitEvents} from '../lib/events'
 import {getEvents} from '../sanity/lib/queries'
 
-const events = await getEvents()
+const {upcoming, past} = splitEvents(await getEvents())
 ---
 
 <BaseLayout title="Events" description="Upcoming and past events on doctor health and wellbeing in Aotearoa and beyond.">
   <PageHero title="Events" />
 
-  <section class="section" aria-label="Event listing">
+  <section class="section" aria-labelledby="upcoming-title">
     <div class="container">
-      <EventList events={events} />
+      <div class="events-header">
+        <h2 class="events-header__title" id="upcoming-title">Upcoming events</h2>
+        <a class="link-arrow" href="#list-an-event">List your event</a>
+      </div>
+
+      <UpcomingEvents events={upcoming} />
     </div>
   </section>
 
-  <section class="section section--alt" id="list-an-event" aria-labelledby="list-an-event-title">
+  {
+    past.length > 0 && (
+      <section class="section section--alt" id="past-events" aria-labelledby="past-title">
+        <div class="container container--narrow">
+          <h2 class="events-header__title" id="past-title">
+            Past events
+          </h2>
+          <p class="past__intro">Earlier events we've listed, with write-ups where available.</p>
+          <PastEventList events={past} />
+        </div>
+      </section>
+    )
+  }
+
+  <section class="section" id="list-an-event" aria-labelledby="list-an-event-title">
     <div class="container container--narrow">
       <h2 class="list-event__title" id="list-an-event-title">Hosting an event? Let us know!</h2>
       <p class="list-event__intro">
@@ -31,6 +52,25 @@ const events = await getEvents()
 </BaseLayout>
 
 <style>
+  .events-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-s);
+    margin-bottom: var(--space-l);
+  }
+
+  .events-header__title {
+    color: var(--color-brand-dark);
+    font-size: clamp(1.75rem, 4vw, 2.25rem);
+  }
+
+  .past__intro {
+    margin-block: var(--space-xs) var(--space-l);
+    color: var(--color-text-muted);
+  }
+
   .list-event__title {
     font-size: clamp(1.5rem, 3vw, 2rem);
     text-align: center;

@@ -1,0 +1,145 @@
+---
+import {formatDayMonth} from '../lib/dates'
+import type {EventSummary} from '../sanity/lib/queries'
+
+interface Props {
+  /** Past events, most recent first. */
+  events: EventSummary[]
+}
+
+const {events} = Astro.props
+
+const byYear = Object.entries(
+  events.reduce<Record<string, EventSummary[]>>((groups, event) => {
+    const year = event.startDate.slice(0, 4)
+    ;(groups[year] ??= []).push(event)
+    return groups
+  }, {}),
+).sort(([a], [b]) => b.localeCompare(a))
+---
+
+<div class="past-events">
+  {
+    byYear.map(([year, yearEvents]) => (
+      <section class="past-events__year" aria-labelledby={`past-${year}`}>
+        <h3 class="past-events__year-title" id={`past-${year}`}>
+          {year}
+        </h3>
+        <ul class="past-events__list" role="list">
+          {yearEvents.map((event) => {
+            const meta = [event.organisers, event.location].filter(Boolean).join(' · ')
+            return (
+              <li class="past-event">
+                <time class="past-event__date" datetime={event.startDate}>
+                  {formatDayMonth(event.startDate)}
+                </time>
+                <div class="past-event__details">
+                  <a class="past-event__title" href={`/event/${event.slug}`}>
+                    {event.title}
+                  </a>
+                  {meta && <p class="past-event__meta">{meta}</p>}
+                </div>
+                {event.hasReport && <span class="past-event__tag">Event report</span>}
+              </li>
+            )
+          })}
+        </ul>
+      </section>
+    ))
+  }
+</div>
+
+<style>
+  .past-events {
+    display: grid;
+    gap: var(--space-l);
+  }
+
+  .past-events__year-title {
+    padding-bottom: var(--space-xs);
+    border-bottom: 2px solid var(--color-brand-dark);
+    color: var(--color-brand-dark);
+    font-size: 1.125rem;
+  }
+
+  .past-events__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .past-event {
+    position: relative;
+    display: grid;
+    grid-template-columns: 4.5rem minmax(0, 1fr) auto;
+    align-items: baseline;
+    gap: var(--space-s);
+    padding-block: var(--space-s);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .past-event:hover {
+    background: var(--color-surface-alt);
+  }
+
+  .past-event__date {
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .past-event__title {
+    color: var(--color-text);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  /* The whole row is clickable via the title link. */
+  .past-event__title::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .past-event__title:hover {
+    color: var(--color-brand-dark);
+    text-decoration: underline;
+  }
+
+  .past-event:has(.past-event__title:focus-visible) {
+    outline: 0.125rem solid var(--color-focus);
+    outline-offset: 0.125rem;
+  }
+
+  .past-event__title:focus-visible {
+    outline: none;
+  }
+
+  .past-event__meta {
+    margin-top: 2px;
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+  }
+
+  .past-event__tag {
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--color-brand-light);
+    color: var(--color-brand-dark);
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 599px) {
+    .past-event {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-2xs);
+    }
+
+    .past-event__tag {
+      justify-self: start;
+    }
+  }
+</style>

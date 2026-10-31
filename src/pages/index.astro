@@ -2,12 +2,15 @@
 import {Image} from 'astro:assets'
 import missionDiagram from '../assets/images/CircleSplit_BLUE_reworked.png'
 import heroImage from '../assets/images/dhashero-1.jpeg'
-import EventList from '../components/EventList.astro'
 import CategoryIcon from '../components/support/CategoryIcon.astro'
+import UpcomingEvents from '../components/UpcomingEvents.astro'
 import BaseLayout from '../layouts/BaseLayout.astro'
+import {splitEvents} from '../lib/events'
 import {getEvents, getSupportOverview} from '../sanity/lib/queries'
 
-const [events, supportCategories] = await Promise.all([getEvents(4), getSupportOverview()])
+const [events, supportCategories] = await Promise.all([getEvents(), getSupportOverview()])
+// The homepage shows at most the next three upcoming events.
+const upcomingEvents = splitEvents(events).upcoming.slice(0, 3)
 
 // Each pillar's `wedge` is its ring segment in the supplied diagram, in a
 // 200×200 viewBox: the image splits at 0°, 120° and 240°, and its white centre
@@ -105,10 +108,14 @@ const organisationJsonLd = {
   <section class="section section--alt" aria-labelledby="events-title">
     <div class="container">
       <div class="home-events__header">
-        <h2 class="home-events__title" id="events-title">Events</h2>
-        <a class="link-arrow" href="/events">View all</a>
+        <h2 class="home-events__title" id="events-title">Upcoming events</h2>
+        <a class="link-arrow" href="/events">All events</a>
       </div>
-      <EventList events={events} />
+      <UpcomingEvents events={upcomingEvents}>
+        <p class="home-events__past" slot="empty">
+          <a href="/events#past-events">Browse past events</a>
+        </p>
+      </UpcomingEvents>
       <p class="home-events__cta">
         Got an event you would like to list? <a href="/events#list-an-event">Tell us about it here!</a>
       </p>
@@ -423,6 +430,10 @@ const organisationJsonLd = {
 
   .home-events__title {
     color: var(--color-brand-dark);
+  }
+
+  .home-events__past {
+    margin-top: var(--space-m);
   }
 
   .home-events__cta {

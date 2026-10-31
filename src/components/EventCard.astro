@@ -5,14 +5,19 @@ import {srcSet, urlFor} from '../sanity/lib/image'
 
 interface Props {
   event: EventSummary
+  /** Image beside the details on wider screens. */
+  wide?: boolean
+  /** The next upcoming event: wide, with a "Next event" label. */
+  featured?: boolean
 }
 
-const {event} = Astro.props
+const {event, featured = false} = Astro.props
+const wide = featured || Astro.props.wide
 const href = `/event/${event.slug}`
 const past = isPast(event.startDate, event.endDate)
 ---
 
-<article class="event-card" data-reveal>
+<article class:list={['event-card', {'event-card--wide': wide}]} data-reveal>
   <div class="event-card__media">
     {
       event.image && (
@@ -20,9 +25,9 @@ const past = isPast(event.startDate, event.endDate)
           class="event-card__image"
           src={urlFor(event.image).width(800).height(440).fit('crop').url()}
           srcset={srcSet(event.image, [400, 800, 1200], 800 / 440)}
-          sizes="(max-width: 900px) 100vw, 560px"
+          sizes={wide ? '(max-width: 767px) 100vw, 570px' : '(max-width: 900px) 100vw, 560px'}
           alt=""
-          loading="lazy"
+          loading={featured ? 'eager' : 'lazy'}
           decoding="async"
         />
       )
@@ -31,6 +36,7 @@ const past = isPast(event.startDate, event.endDate)
   </div>
 
   <div class="event-card__body">
+    {featured && <p class="event-card__label">Next event</p>}
     <header class="event-card__header">
       <div>
         <h3 class="event-card__title">
@@ -188,5 +194,49 @@ const past = isPast(event.startDate, event.endDate)
 
   .event-card:hover .button {
     background: #133654;
+  }
+
+  /* Wide: image beside the details on wider screens. */
+  .event-card__label {
+    align-self: flex-start;
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: var(--color-brand-light);
+    color: var(--color-brand-dark);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .event-card--wide .event-card__title {
+    font-size: clamp(1.25rem, 2.5vw, 1.625rem);
+    line-height: 1.3;
+  }
+
+  .event-card--wide .event-card__description {
+    font-size: 1.0625rem;
+  }
+
+  .event-card--wide .event-card__meta {
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  @media (min-width: 768px) {
+    .event-card--wide {
+      flex-direction: row;
+      min-height: 340px;
+    }
+
+    .event-card--wide .event-card__media {
+      flex: 0 0 50%;
+      height: auto;
+    }
+
+    .event-card--wide .event-card__body {
+      gap: var(--space-m);
+      padding: var(--space-l);
+    }
   }
 </style>
