@@ -44,19 +44,32 @@ export interface TeamMember {
   bio?: PortableTextBlock[]
 }
 
+export interface SupportEntry {
+  _key: string
+  title: string
+  url?: string
+  byline?: string
+  source?: string
+  description?: PortableTextBlock[]
+}
+
+export interface SupportResource {
+  _id: string
+  title: string
+  slug: string
+  body?: PortableTextBlock[]
+  entriesTitle?: string
+  entries?: SupportEntry[]
+  details?: {title?: string; body?: PortableTextBlock[]}
+}
+
 export interface SupportCategory {
   _id: string
   title: string
   slug: string
   intro?: string
-  resources: {
-    _id: string
-    title: string
-    slug: string
-    body?: PortableTextBlock[]
-    details?: {title?: string; body?: PortableTextBlock[]}
-    links?: {_key: string; label: string; url: string}[]
-  }[]
+  icon?: 'people' | 'seedling' | 'book'
+  resources: SupportResource[]
 }
 
 const eventSummaryFields = `
@@ -92,9 +105,9 @@ export function getTeam(): Promise<TeamMember[]> {
 export function getSupportCategories(): Promise<SupportCategory[]> {
   return sanityClient.fetch(`
     *[_type == "supportCategory"] | order(order asc) {
-      _id, title, "slug": slug.current, intro,
+      _id, title, "slug": slug.current, intro, icon,
       "resources": *[_type == "supportResource" && references(^._id)] | order(order asc, title asc) {
-        _id, title, "slug": slug.current, body, details, links
+        _id, title, "slug": slug.current, body, entriesTitle, entries, details
       }
     }
   `)

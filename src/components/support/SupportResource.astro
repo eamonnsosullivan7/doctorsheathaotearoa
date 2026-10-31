@@ -1,0 +1,129 @@
+---
+import type {SupportResource} from '../../sanity/lib/queries'
+import RichText from '../RichText.astro'
+import ResourceEntries from './ResourceEntries.astro'
+
+interface Props {
+  resource: SupportResource
+  /** Resources sharing a group name close each other when one opens. */
+  group: string
+}
+
+const {resource, group} = Astro.props
+const entries = resource.entries ?? []
+---
+
+<details class="resource" id={resource.slug} name={group}>
+  <summary class="resource__summary">
+    <h3 class="resource__title">{resource.title}</h3>
+    <svg class="resource__icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 5v14M5 12h14"></path>
+    </svg>
+  </summary>
+
+  <div class="resource__panel">
+    <RichText class="resource__intro" value={resource.body} />
+    {entries.length > 0 && <ResourceEntries entries={entries} title={resource.entriesTitle} />}
+    {
+      resource.details?.body && (
+        <details class="resource__details">
+          <summary class="resource__details-summary">{resource.details.title ?? 'More information'}</summary>
+          <RichText value={resource.details.body} />
+        </details>
+      )
+    }
+  </div>
+</details>
+
+<style>
+  .resource {
+    border-bottom: 1px solid var(--color-border);
+    scroll-margin-top: var(--space-l);
+  }
+
+  .resource__summary {
+    display: flex;
+    align-items: center;
+    gap: var(--space-s);
+    padding-block: var(--space-s);
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .resource__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .resource__title {
+    flex: 1;
+    font-size: 1.125rem;
+    line-height: 1.35;
+  }
+
+  .resource__summary:hover .resource__title,
+  .resource[open] .resource__title {
+    color: var(--color-brand-dark);
+  }
+
+  .resource__icon {
+    flex: none;
+    width: 32px;
+    height: 32px;
+    padding: 6px;
+    border-radius: 50%;
+    background: var(--color-surface-alt);
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    transition: transform 0.2s ease;
+  }
+
+  .resource[open] .resource__icon {
+    transform: rotate(45deg);
+  }
+
+  /* The open content steps in from the title, with an accent line tying it to it. */
+  .resource__panel {
+    display: grid;
+    gap: var(--space-m);
+    margin: 0 0 var(--space-m) var(--space-2xs);
+    padding: var(--space-m);
+    border-left: 3px solid var(--color-brand);
+    border-radius: 0 var(--radius-m) var(--radius-m) 0;
+    background: var(--color-surface-alt);
+  }
+
+  .resource__panel > :global(*) {
+    max-width: 68ch;
+  }
+
+  .resource__details {
+    padding: var(--space-s) var(--space-m);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-m);
+    background: var(--color-surface);
+  }
+
+  .resource__details-summary {
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .resource__details[open] .resource__details-summary {
+    margin-bottom: var(--space-s);
+  }
+
+  @media (max-width: 600px) {
+    .resource__panel {
+      margin-left: 0;
+      padding: var(--space-s);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .resource__icon {
+      transition: none;
+    }
+  }
+</style>

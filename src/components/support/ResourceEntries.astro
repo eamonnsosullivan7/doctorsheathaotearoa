@@ -1,0 +1,206 @@
+---
+import type {SupportEntry} from '../../sanity/lib/queries'
+import RichText from '../RichText.astro'
+
+interface Props {
+  entries: SupportEntry[]
+  title?: string
+}
+
+const {entries, title} = Astro.props
+
+// Entries that are only a name and a link read best as a compact list; anything
+// with a byline or description gets a card.
+const compact = entries.every((entry) => !entry.byline && !entry.description?.length)
+const externalAttrs = {target: '_blank', rel: 'noopener noreferrer'}
+---
+
+<div class="entries">
+  {title && <h4 class="entries__title">{title}</h4>}
+
+  {
+    compact ? (
+      <ul class="link-list" role="list">
+        {entries.map((entry) => (
+          <li class="link-list__item">
+            {entry.url ? (
+              <a class="link-list__link" href={entry.url} {...externalAttrs}>
+                {entry.title}
+                <svg class="external-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M7 17L17 7M8 7h9v9" />
+                </svg>
+              </a>
+            ) : (
+              <span class="link-list__link">{entry.title}</span>
+            )}
+            {entry.source && <span class="link-list__source">{entry.source}</span>}
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <ul class="entry-list" role="list">
+        {entries.map((entry) => {
+          const [summary, ...more] = entry.description ?? []
+          const meta = [entry.byline, entry.source].filter(Boolean)
+          return (
+            <li class="entry">
+              <h4 class="entry__title">
+                {entry.url ? (
+                  <a class="entry__link" href={entry.url} {...externalAttrs}>
+                    {entry.title}
+                    <svg class="external-icon" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M7 17L17 7M8 7h9v9" />
+                    </svg>
+                  </a>
+                ) : (
+                  entry.title
+                )}
+              </h4>
+              {meta.length > 0 && (
+                <p class="entry__meta">
+                  {meta.map((part, index) => (
+                    <>
+                      {index > 0 && <span aria-hidden="true"> · </span>}
+                      <span class:list={[index === 0 && entry.byline ? 'entry__byline' : 'entry__source']}>{part}</span>
+                    </>
+                  ))}
+                </p>
+              )}
+              {summary && <RichText class="entry__description" value={[summary]} />}
+              {more.length > 0 && (
+                <details class="entry__more">
+                  <summary class="entry__more-toggle">More about {entry.title}</summary>
+                  <RichText class="entry__description" value={more} />
+                </details>
+              )}
+            </li>
+          )
+        })}
+      </ul>
+    )
+  }
+</div>
+
+<style>
+  .entries {
+    display: grid;
+    gap: var(--space-s);
+  }
+
+  .entries__title {
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .external-icon {
+    display: inline-block;
+    flex: none;
+    width: 0.9em;
+    height: 0.9em;
+    margin-left: 0.25em;
+    vertical-align: -0.05em;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* Compact list: name, link and optional source */
+
+  .link-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
+    gap: var(--space-xs);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .link-list__item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: var(--space-xs) var(--space-s);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-m);
+    background: var(--color-surface);
+  }
+
+  .link-list__item:has(.link-list__link:hover) {
+    border-color: var(--color-brand-dark);
+  }
+
+  .link-list__link {
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  a.link-list__link:hover {
+    text-decoration: underline;
+  }
+
+  .link-list__source {
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+  }
+
+  /* Cards: title, byline/source, first paragraph, then "More about…" */
+
+  .entry-list {
+    display: grid;
+    gap: var(--space-s);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .entry {
+    display: grid;
+    gap: var(--space-xs);
+    padding: var(--space-s) var(--space-m);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-m);
+    background: var(--color-surface);
+  }
+
+  .entry__title {
+    font-size: 1.0625rem;
+    line-height: 1.35;
+  }
+
+  .entry__link {
+    text-decoration: none;
+  }
+
+  .entry__link:hover {
+    text-decoration: underline;
+  }
+
+  .entry__meta {
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+  }
+
+  .entry__byline {
+    font-style: italic;
+  }
+
+  .entry__description {
+    font-size: 0.9375rem;
+  }
+
+  .entry__more-toggle {
+    width: fit-content;
+    color: var(--color-brand-dark);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .entry__more[open] .entry__more-toggle {
+    margin-bottom: var(--space-xs);
+  }
+</style>

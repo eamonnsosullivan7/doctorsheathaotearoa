@@ -20,7 +20,6 @@ npm run dev            # http://localhost:4321, Studio at http://localhost:4321/
 | `npm run build`         | Static build to `dist/`                        |
 | `npm run preview`       | Serve the build locally                        |
 | `npm run check`         | Type-check `.astro` and `.ts` files            |
-| `npm run import:webflow -- <dir>` | Re-import the Webflow CSV exports from `<dir>` (overwrites the imported documents) |
 
 ## Project layout
 
@@ -34,7 +33,6 @@ src/
     schemaTypes/      Content model
     structure.ts      Studio sidebar
     lib/              GROQ queries + image URL helpers
-scripts/              One-off Webflow import
 sanity.config.ts      Studio config
 ```
 
@@ -48,7 +46,7 @@ CSS uses BEM class names (`block__element--modifier`). Each component keeps its 
 | `news`            | `/news` (most recent is featured)          |
 | `teamMember`      | `/about` "Meet Our Team", sorted by `order` |
 | `supportCategory` | `/support` sections, sorted by `order`     |
-| `supportResource` | `/support` collapsible entries, sorted by `order` within their category |
+| `supportResource` | `/support` collapsible entries, sorted by `order` within their category. Each has an intro plus optional `entries` (services, podcasts, books, papers…): title-and-link-only entries render as a compact link grid, entries with a byline or description render as cards |
 
 The static page copy (home, about, contact, donate intros) lives in the `.astro` files.
 
