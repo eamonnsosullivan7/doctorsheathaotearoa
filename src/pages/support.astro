@@ -1,15 +1,11 @@
 ---
-import {Image} from 'astro:assets'
-import bookIcon from '../assets/icons/book-open-solid-full.svg'
-import peopleIcon from '../assets/icons/people-group-solid-full.svg'
-import seedlingIcon from '../assets/icons/seedling-solid-full.svg'
 import PageHero from '../components/PageHero.astro'
+import CategoryIcon from '../components/support/CategoryIcon.astro'
 import SupportResource from '../components/support/SupportResource.astro'
 import BaseLayout from '../layouts/BaseLayout.astro'
 import {getSupportCategories} from '../sanity/lib/queries'
 
 const categories = await getSupportCategories()
-const icons = {people: peopleIcon, seedling: seedlingIcon, book: bookIcon}
 ---
 
 <BaseLayout
@@ -42,11 +38,7 @@ const icons = {people: peopleIcon, seedling: seedlingIcon, book: bookIcon}
       categories.map((category) => (
         <section class="support-category" id={category.slug} aria-labelledby={`${category.slug}-title`}>
           <header class="support-category__header">
-            {category.icon && (
-              <span class="support-category__icon">
-                <Image src={icons[category.icon]} alt="" width={28} height={28} />
-              </span>
-            )}
+            <CategoryIcon icon={category.icon} />
             <div>
               <h2 class="support-category__title" id={`${category.slug}-title`}>
                 {category.title}
@@ -135,16 +127,6 @@ const icons = {people: peopleIcon, seedling: seedlingIcon, book: bookIcon}
     display: flex;
     align-items: flex-start;
     gap: var(--space-s);
-  }
-
-  .support-category__icon {
-    display: grid;
-    flex: none;
-    place-items: center;
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    background: var(--color-brand-light);
   }
 
   .support-category__title {

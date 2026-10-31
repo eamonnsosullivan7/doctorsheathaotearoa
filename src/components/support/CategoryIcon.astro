@@ -1,0 +1,34 @@
+---
+import {Image} from 'astro:assets'
+import bookIcon from '../../assets/icons/book-open-solid-full.svg'
+import peopleIcon from '../../assets/icons/people-group-solid-full.svg'
+import seedlingIcon from '../../assets/icons/seedling-solid-full.svg'
+import type {SupportCategory} from '../../sanity/lib/queries'
+
+interface Props {
+  icon: SupportCategory['icon']
+}
+
+const icons = {people: peopleIcon, seedling: seedlingIcon, book: bookIcon}
+const {icon} = Astro.props
+---
+
+{
+  icon && (
+    <span class="category-icon">
+      <Image src={icons[icon]} alt="" width={28} height={28} />
+    </span>
+  )
+}
+
+<style>
+  .category-icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--color-brand-light);
+  }
+</style>

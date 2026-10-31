@@ -102,6 +102,26 @@ export function getTeam(): Promise<TeamMember[]> {
   )
 }
 
+export interface SupportCategorySummary extends Omit<SupportCategory, 'resources'> {
+  /** The first few resource titles, in display order. */
+  preview: string[]
+  resourceCount: number
+}
+
+/** Categories for the homepage cards: a preview of what each support section contains. */
+export function getSupportOverview(previewCount = 3): Promise<SupportCategorySummary[]> {
+  return sanityClient.fetch(
+    `
+    *[_type == "supportCategory"] | order(order asc) {
+      _id, title, "slug": slug.current, intro, icon,
+      "preview": *[_type == "supportResource" && references(^._id)] | order(order asc, title asc) [0...$previewCount].title,
+      "resourceCount": count(*[_type == "supportResource" && references(^._id)])
+    }
+  `,
+    {previewCount},
+  )
+}
+
 export function getSupportCategories(): Promise<SupportCategory[]> {
   return sanityClient.fetch(`
     *[_type == "supportCategory"] | order(order asc) {

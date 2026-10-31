@@ -1,15 +1,13 @@
 ---
 import {Image} from 'astro:assets'
-import bookIcon from '../assets/icons/book-open-solid-full.svg'
-import peopleIcon from '../assets/icons/people-group-solid-full.svg'
-import seedlingIcon from '../assets/icons/seedling-solid-full.svg'
 import missionDiagram from '../assets/images/CircleSplit_BLUE_reworked.png'
 import heroImage from '../assets/images/dhashero-1.jpeg'
 import EventList from '../components/EventList.astro'
+import CategoryIcon from '../components/support/CategoryIcon.astro'
 import BaseLayout from '../layouts/BaseLayout.astro'
-import {getEvents} from '../sanity/lib/queries'
+import {getEvents, getSupportOverview} from '../sanity/lib/queries'
 
-const events = await getEvents(4)
+const [events, supportCategories] = await Promise.all([getEvents(4), getSupportOverview()])
 
 // Each pillar's `wedge` is its ring segment in the supplied diagram, in a
 // 200×200 viewBox: the image splits at 0°, 120° and 240°, and its white centre
@@ -33,27 +31,6 @@ const pillars = [
     title: 'Education',
     text: 'Promoting training on being a doctor for doctors, substance use, holistic wellbeing and sustainable careers, adapting proven international models for Aotearoa.',
     wedge: 'M186.6 150 A100 100 0 0 1 13.4 150 L48.9 129.5 A59 59 0 0 0 151.1 129.5 Z',
-  },
-]
-
-const supportAreas = [
-  {
-    icon: peopleIcon,
-    title: 'Support for you and your colleagues',
-    text: 'Confidential, compassionate support for doctors and medical students facing personal, professional, or health challenges.',
-    href: '/support#support-for-you-and-your-colleagues',
-  },
-  {
-    icon: seedlingIcon,
-    title: 'Get involved in supporting doctors',
-    text: 'Join our network of doctors helping doctors. Volunteer for the roster, offer services, or contribute your expertise.',
-    href: '/support#get-involved',
-  },
-  {
-    icon: bookIcon,
-    title: 'Voices from the medical community',
-    text: 'Explore insights, interviews, and stories from doctors supporting doctors.',
-    href: '/support#articles-podcasts-books',
   },
 ]
 
@@ -140,27 +117,49 @@ const organisationJsonLd = {
 
   <section class="section" aria-labelledby="support-title">
     <div class="container">
-      <h2 class="support-teaser__title" id="support-title">How We Support the Medical Community</h2>
-      <p class="support-teaser__intro">
+      <h2 class="support-overview__title" id="support-title">How We Support the Medical Community</h2>
+      <p class="support-overview__intro">
         There are many support services and online resources that doctors and medical students can access for any level
         of support you or your colleagues may need.
       </p>
-      <ul class="support-teaser__list" role="list">
+      <ul class="support-overview__list" role="list">
         {
-          supportAreas.map((area) => (
-            <li class="support-teaser__item" data-reveal>
-              <Image class="support-teaser__icon" src={area.icon} alt="" width={40} height={40} />
-              <h3 class="support-teaser__item-title">
-                <a class="support-teaser__link" href={area.href}>
-                  {area.title}
-                </a>
-              </h3>
-              <p>{area.text}</p>
-            </li>
-          ))
+          supportCategories.map((category) => {
+            const remaining = category.resourceCount - category.preview.length
+            return (
+              <li class="support-card" data-reveal>
+                <CategoryIcon icon={category.icon} />
+                <h3 class="support-card__title">
+                  <a class="support-card__link" href={`/support#${category.slug}`}>
+                    {category.title}
+                  </a>
+                </h3>
+                {/* Intro and preview always render so the subgrid rows stay aligned. */}
+                <p class="support-card__intro">{category.intro}</p>
+                <div class="support-card__preview">
+                  {category.preview.length > 0 && (
+                    <>
+                      <p class="support-card__preview-label">Includes</p>
+                      <ul class="support-card__preview-list">
+                        {category.preview.map((title) => (
+                          <li class="support-card__preview-item">{title}</li>
+                        ))}
+                      </ul>
+                      {remaining > 0 && <p class="support-card__more">and {remaining} more</p>}
+                    </>
+                  )}
+                </div>
+                <p class="support-card__cta" aria-hidden="true">
+                  Explore
+                  <svg class="support-card__arrow" viewBox="0 0 24 24">
+                    <path d="M5 12h14M13 6l6 6-6 6" />
+                  </svg>
+                </p>
+              </li>
+            )
+          })
         }
       </ul>
-      <p class="support-teaser__more"><a class="link-arrow" href="/support">Learn more</a></p>
     </div>
   </section>
 </BaseLayout>
@@ -437,66 +436,154 @@ const organisationJsonLd = {
     text-align: center;
   }
 
-  /* Support teaser */
-  .support-teaser__title {
+  /* Support overview: one card per support page category */
+  .support-overview__title {
     margin-bottom: var(--space-m);
     font-size: clamp(1.5rem, 3vw, 2rem);
   }
 
-  .support-teaser__intro {
+  .support-overview__intro {
     max-width: 48rem;
   }
 
-  .support-teaser__list {
+  .support-overview__list {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
     gap: var(--space-m);
-    margin: var(--space-l) 0;
+    margin: var(--space-l) 0 0;
     padding: 0;
     list-style: none;
   }
 
-  .support-teaser__item {
+  /* Subgrid lines up each row (icon, title, intro, preview, link) across the cards. */
+  .support-card {
     position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--space-s);
-    padding: var(--space-m) var(--space-s);
+    display: grid;
+    grid-row: span 5;
+    grid-template-rows: subgrid;
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: var(--space-s);
+    padding: var(--space-m);
     border-radius: var(--radius-m);
     background: var(--color-surface);
     box-shadow: var(--shadow-card);
-    text-align: center;
     transition: transform 0.2s ease;
   }
 
-  .support-teaser__item:hover {
+  .support-card:hover {
     transform: translateY(-4px);
   }
 
-  .support-teaser__icon {
-    width: 40px;
-    height: 40px;
+  .support-card:has(.support-card__link:focus-visible) {
+    outline: 0.125rem solid var(--color-focus);
+    outline-offset: 0.125rem;
   }
 
-  .support-teaser__item-title {
+  .support-card > :global(.category-icon) {
+    justify-self: start;
+  }
+
+  .support-card__title {
+    color: var(--color-brand-dark);
     font-size: 1.2rem;
     line-height: 1.4;
   }
 
-  .support-teaser__link {
+  .support-card__link {
     color: inherit;
     text-decoration: none;
   }
 
-  .support-teaser__link::after {
+  /* The whole card is clickable via the title link. */
+  .support-card__link::after {
     content: '';
     position: absolute;
     inset: 0;
   }
 
-  .support-teaser__more {
-    font-size: 1.25rem;
-    text-align: right;
+  .support-card__link:focus-visible {
+    outline: none;
+  }
+
+  .support-card__intro {
+    color: var(--color-text-muted);
+  }
+
+  .support-card__preview {
+    align-self: start;
+    width: 100%;
+    font-size: 0.875rem;
+  }
+
+  .support-card__preview:not(:empty) {
+    padding-top: var(--space-s);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .support-card__preview-label {
+    margin-bottom: var(--space-2xs);
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .support-card__preview-list {
+    margin: 0;
+    padding-left: 1.1em;
+  }
+
+  .support-card__preview-item {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .support-card__preview-item::marker {
+    color: var(--color-brand);
+  }
+
+  .support-card__more {
+    margin-top: var(--space-2xs);
+    color: var(--color-text-muted);
+  }
+
+  .support-card__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    align-self: end;
+    justify-self: start;
+    padding-top: var(--space-xs);
+    color: var(--color-brand-dark);
+    font-weight: 600;
+  }
+
+  .support-card__arrow {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform 0.2s ease;
+  }
+
+  .support-card:hover .support-card__arrow {
+    transform: translateX(4px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .support-card,
+    .support-card__arrow {
+      transition: none;
+    }
+
+    .support-card:hover,
+    .support-card:hover .support-card__arrow {
+      transform: none;
+    }
   }
 </style>
