@@ -1,207 +1,197 @@
 ---
 import {Image} from 'astro:assets'
 import newspaperIcon from '../assets/icons/newspaper-icon.svg'
+import NewsList from '../components/NewsList.astro'
 import PageHero from '../components/PageHero.astro'
+import RichText from '../components/RichText.astro'
 import BaseLayout from '../layouts/BaseLayout.astro'
 import {formatDate} from '../lib/dates'
-import {urlFor} from '../sanity/lib/image'
+import {srcSet, urlFor} from '../sanity/lib/image'
+import {newsLinkText, newsTypes} from '../sanity/lib/newsTypes'
 import {getNews} from '../sanity/lib/queries'
 
-const [featured, ...latest] = await getNews()
+// Newest first: the latest item is featured, the rest are listed by year.
+const [featured, ...earlier] = await getNews()
 ---
 
 <BaseLayout title="News" description="News and newsletters on doctor health and wellbeing.">
   <PageHero title="News" />
 
-  <div class="section container container--narrow news">
-    {
-      featured ? (
-        <section aria-labelledby="featured-title">
-          <h2 class="news__label" id="featured-title">
-            Featured
-          </h2>
-          <article class="article-card article-card--featured">
-            <div class="article-card__media">
+  <section class="section" aria-labelledby="latest-title">
+    <div class="container">
+      <h2 class="news-section__title" id="latest-title">Latest</h2>
+      {
+        featured ? (
+          <article class="news-feature" data-reveal>
+            <div class="news-feature__media">
               {featured.image ? (
                 <img
-                  class="article-card__image"
-                  src={urlFor(featured.image).width(800).height(800).fit('crop').url()}
-                  alt=""
-                  loading="lazy"
+                  class="news-feature__image"
+                  src={urlFor(featured.image).width(900).height(700).fit('crop').url()}
+                  srcset={srcSet(featured.image, [450, 900, 1300], 9 / 7)}
+                  sizes="(max-width: 767px) 100vw, 440px"
+                  alt={featured.image.alt ?? ''}
+                  decoding="async"
                 />
               ) : (
-                <Image class="article-card__placeholder" src={newspaperIcon} alt="" width={64} height={64} />
+                <Image class="news-feature__placeholder" src={newspaperIcon} alt="" width={72} height={72} />
               )}
             </div>
-            <div class="article-card__content">
-              <time class="article-card__badge" datetime={featured.date}>
-                {formatDate(featured.date)}
-              </time>
-              <h3 class="article-card__title">{featured.title}</h3>
-              {featured.subtitle && <p class="article-card__subtitle">{featured.subtitle}</p>}
-              {featured.summary && <p class="article-card__summary">{featured.summary}</p>}
+            <div class="news-feature__content">
+              <p class="news-feature__meta">
+                {featured.type && <span class="news-feature__type">{newsTypes[featured.type].label}</span>}
+                {featured.source && <span>{featured.source}</span>}
+                <time datetime={featured.date}>{formatDate(featured.date)}</time>
+              </p>
+              <h3 class="news-feature__title">{featured.title}</h3>
+              {featured.subtitle && <p class="news-feature__subtitle">{featured.subtitle}</p>}
+              {featured.excerpt && <p class="news-feature__excerpt">{featured.excerpt}</p>}
+              <RichText class="news-feature__body" value={featured.body} />
               {featured.link && (
-                <a class="article-card__link" href={featured.link} target="_blank" rel="noopener noreferrer">
-                  Read full article →
+                <a class="button news-feature__link" href={featured.link} target="_blank" rel="noopener noreferrer">
+                  {newsLinkText(featured.type)}
+                  <svg class="news-feature__external" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M7 17L17 7M8 7h9v9" />
+                  </svg>
+                  <span class="visually-hidden">(opens in a new tab)</span>
                 </a>
               )}
             </div>
           </article>
-        </section>
-      ) : (
-        <p>No news yet – check back soon.</p>
-      )
-    }
+        ) : (
+          <p>No news yet – check back soon.</p>
+        )
+      }
+    </div>
+  </section>
 
-    {
-      latest.length > 0 && (
-        <section class="news__latest" aria-labelledby="latest-title">
-          <h2 class="news__label" id="latest-title">
-            Latest news
+  {
+    earlier.length > 0 && (
+      <section class="section section--alt" aria-labelledby="earlier-title">
+        <div class="container container--narrow">
+          <h2 class="news-section__title" id="earlier-title">
+            Earlier news
           </h2>
-          <ul class="news__grid" role="list">
-            {latest.map((item) => (
-              <li>
-                <article class="article-card">
-                  <div class="article-card__media">
-                    {item.image ? (
-                      <img
-                        class="article-card__image"
-                        src={urlFor(item.image).width(800).height(450).fit('crop').url()}
-                        alt=""
-                        loading="lazy"
-                      />
-                    ) : (
-                      <Image class="article-card__placeholder" src={newspaperIcon} alt="" width={48} height={48} />
-                    )}
-                  </div>
-                  <div class="article-card__content">
-                    <time class="article-card__badge" datetime={item.date}>
-                      {formatDate(item.date)}
-                    </time>
-                    <h3 class="article-card__title">{item.title}</h3>
-                    {item.subtitle && <p class="article-card__subtitle">{item.subtitle}</p>}
-                    {item.summary && <p class="article-card__summary article-card__summary--clamped">{item.summary}</p>}
-                    {item.link && (
-                      <a class="article-card__link" href={item.link} target="_blank" rel="noopener noreferrer">
-                        Read full article →
-                      </a>
-                    )}
-                  </div>
-                </article>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )
-    }
-  </div>
+          <NewsList items={earlier} />
+        </div>
+      </section>
+    )
+  }
 </BaseLayout>
 
 <style>
-  .news__label {
-    margin-bottom: var(--space-s);
-    color: var(--color-text-muted);
-    font-size: 0.75rem;
-    letter-spacing: 1px;
-    text-transform: uppercase;
+  .news-section__title {
+    margin-bottom: var(--space-l);
+    color: var(--color-brand-dark);
+    font-size: clamp(1.75rem, 4vw, 2.25rem);
   }
 
-  .news__latest {
-    margin-top: var(--space-2xl);
-  }
-
-  .news__grid {
+  .news-feature {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
-    gap: var(--space-m);
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .article-card {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
     overflow: hidden;
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-m);
+    border-radius: var(--radius-l);
+    background: var(--color-surface);
     box-shadow: var(--shadow-card);
   }
 
-  .article-card--featured {
-    flex-direction: row;
-    border-radius: var(--radius-l);
-  }
-
-  .article-card__media {
+  .news-feature__media {
     display: grid;
     place-items: center;
-    min-height: 180px;
+    min-height: 260px;
     background: var(--color-brand-light);
   }
 
-  .article-card--featured .article-card__media {
-    flex: 0 0 40%;
-  }
-
-  .article-card__image {
+  .news-feature__image {
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
 
-  .article-card__placeholder {
+  .news-feature__placeholder {
     opacity: 0.5;
   }
 
-  .article-card__content {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-xs);
-    padding: var(--space-m);
+  .news-feature__content {
+    display: grid;
+    align-content: start;
+    justify-items: start;
+    gap: var(--space-s);
+    padding: var(--space-l);
   }
 
-  .article-card__badge {
-    padding: 2px 8px;
-    border-radius: var(--radius-s);
-    background: var(--color-brand-dark);
-    color: var(--color-text-inverse);
+  .news-feature__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2xs) var(--space-s);
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+  }
+
+  .news-feature__type {
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: var(--color-brand-light);
+    color: var(--color-brand-dark);
     font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .news-feature__title {
+    color: var(--color-brand-dark);
+    font-size: clamp(1.375rem, 3vw, 1.75rem);
+    line-height: 1.25;
+  }
+
+  .news-feature__subtitle {
+    margin-top: calc(-1 * var(--space-xs));
+    color: var(--color-text-muted);
     font-weight: 600;
   }
 
-  .article-card__title {
-    font-size: 1.25rem;
+  .news-feature__excerpt {
+    max-width: 62ch;
+    font-size: 1.0625rem;
   }
 
-  .article-card__subtitle {
+  .news-feature__body {
+    max-width: 62ch;
     color: var(--color-text-muted);
   }
 
-  .article-card__summary {
-    font-size: 0.875rem;
+  .news-feature__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    margin-top: var(--space-xs);
   }
 
-  .article-card__summary--clamped {
-    display: -webkit-box;
-    overflow: hidden;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 6;
-  }
-
-  .article-card__link {
-    margin-top: auto;
-    padding-top: var(--space-xs);
-    font-size: 0.875rem;
+  .news-feature__external {
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
   }
 
   @media (max-width: 767px) {
-    .article-card--featured {
-      flex-direction: column;
+    .news-feature {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .news-feature__media {
+      min-height: 0;
+      aspect-ratio: 16 / 9;
+    }
+
+    .news-feature__content {
+      padding: var(--space-m);
     }
   }
 </style>

@@ -1,0 +1,162 @@
+---
+import {formatDayMonth} from '../lib/dates'
+import {newsTypes} from '../sanity/lib/newsTypes'
+import type {NewsItem} from '../sanity/lib/queries'
+
+interface Props {
+  /** News items, newest first. */
+  items: NewsItem[]
+}
+
+const {items} = Astro.props
+
+const byYear = Object.entries(
+  items.reduce<Record<string, NewsItem[]>>((groups, item) => {
+    const year = item.date.slice(0, 4)
+    ;(groups[year] ??= []).push(item)
+    return groups
+  }, {}),
+).sort(([a], [b]) => b.localeCompare(a))
+---
+
+<div class="news-list">
+  {
+    byYear.map(([year, yearItems]) => (
+      <section class="news-list__year" aria-labelledby={`news-${year}`}>
+        <h3 class="news-list__year-title" id={`news-${year}`}>
+          {year}
+        </h3>
+        <ul class="news-list__items" role="list">
+          {yearItems.map((item) => {
+            const meta = [item.type && newsTypes[item.type].label, item.source].filter(Boolean).join(' · ')
+            return (
+              <li class="news-item">
+                <time class="news-item__date" datetime={item.date}>
+                  {formatDayMonth(item.date)}
+                </time>
+                <div class="news-item__details">
+                  {item.link ? (
+                    <a class="news-item__title" href={item.link} target="_blank" rel="noopener noreferrer">
+                      {item.title}
+                      <svg class="news-item__external" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M7 17L17 7M8 7h9v9" />
+                      </svg>
+                      <span class="visually-hidden">(opens in a new tab)</span>
+                    </a>
+                  ) : (
+                    <span class="news-item__title">{item.title}</span>
+                  )}
+                  {meta && <p class="news-item__meta">{meta}</p>}
+                  {item.excerpt && <p class="news-item__excerpt">{item.excerpt}</p>}
+                </div>
+              </li>
+            )
+          })}
+        </ul>
+      </section>
+    ))
+  }
+</div>
+
+<style>
+  .news-list {
+    display: grid;
+    gap: var(--space-l);
+  }
+
+  .news-list__year-title {
+    padding-bottom: var(--space-xs);
+    border-bottom: 2px solid var(--color-brand-dark);
+    color: var(--color-brand-dark);
+    font-size: 1.125rem;
+  }
+
+  .news-list__items {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .news-item {
+    position: relative;
+    display: grid;
+    grid-template-columns: 4.5rem minmax(0, 1fr);
+    align-items: baseline;
+    gap: var(--space-s);
+    padding-block: var(--space-s);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .news-item:has(a.news-item__title):hover {
+    background: var(--color-surface-alt);
+  }
+
+  .news-item__date {
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .news-item__title {
+    color: var(--color-text);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  /* Linked items: the whole row is clickable via the title. */
+  a.news-item__title::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  a.news-item__title:hover {
+    color: var(--color-brand-dark);
+    text-decoration: underline;
+  }
+
+  a.news-item__title:focus-visible {
+    outline: none;
+  }
+
+  .news-item:has(a.news-item__title:focus-visible) {
+    outline: 0.125rem solid var(--color-focus);
+    outline-offset: 0.125rem;
+  }
+
+  .news-item__external {
+    display: inline-block;
+    width: 0.85em;
+    height: 0.85em;
+    margin-left: 0.25em;
+    vertical-align: -0.05em;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .news-item__meta {
+    margin-top: 2px;
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+  }
+
+  .news-item__excerpt {
+    display: -webkit-box;
+    margin-top: var(--space-2xs);
+    overflow: hidden;
+    font-size: 0.875rem;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  @media (max-width: 599px) {
+    .news-item {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-2xs);
+    }
+  }
+</style>

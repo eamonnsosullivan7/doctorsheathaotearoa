@@ -1,5 +1,6 @@
 import type {PortableTextBlock} from '@portabletext/types'
 import {sanityClient} from 'sanity:client'
+import type {NewsType} from './newsTypes'
 
 export interface SanityImage {
   asset: {_ref: string}
@@ -32,7 +33,10 @@ export interface NewsItem {
   title: string
   subtitle?: string
   date: string
-  summary?: string
+  type?: NewsType
+  source?: string
+  excerpt?: string
+  body?: PortableTextBlock[]
   link?: string
   image?: SanityImage
 }
@@ -93,7 +97,7 @@ export function getEventsWithContent(): Promise<Event[]> {
 
 export function getNews(): Promise<NewsItem[]> {
   return sanityClient.fetch(
-    `*[_type == "news"] | order(date desc) { _id, title, subtitle, date, summary, link, image }`,
+    `*[_type == "news"] | order(date desc) { _id, title, subtitle, date, type, source, excerpt, body, link, image }`,
   )
 }
 
