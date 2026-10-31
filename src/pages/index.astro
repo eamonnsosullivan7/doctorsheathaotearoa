@@ -11,21 +11,28 @@ import {getEvents} from '../sanity/lib/queries'
 
 const events = await getEvents(4)
 
+// Each pillar's `wedge` is its ring segment in the supplied diagram, in a
+// 200×200 viewBox: the image splits at 0°, 120° and 240°, and its white centre
+// is 59% of the diameter. The wedges sit invisibly over the image to link and
+// highlight each segment without altering the artwork.
 const pillars = [
   {
     id: 'connections',
     title: 'Connections',
-    text: 'We serve as a central hub for collaboration and networking, linking doctors with the support they need through partnerships with like-minded organisations. We connect and amplify organisations that support and research doctor health & wellbeing.',
+    text: 'A central hub linking doctors with the support they need, and amplifying organisations that support and research doctor health and wellbeing.',
+    wedge: 'M13.4 150 A100 100 0 0 1 100 0 L100 41 A59 59 0 0 0 48.9 129.5 Z',
   },
   {
     id: 'advocacy',
     title: 'Advocacy',
-    text: 'We are an authoritative voice on doctor and medical student health and wellbeing. Our goal is to drive impactful change by shaping policies, highlighting emerging issues, advocating for systemic improvements and targeted research and support. We work across media, regulatory bodies, and professional organisations ensuring the voices of doctors are heard.',
+    text: 'An authoritative voice on doctor and medical student wellbeing, shaping policy and pushing for systemic change with media, regulators and professional bodies.',
+    wedge: 'M100 0 A100 100 0 0 1 186.6 150 L151.1 129.5 A59 59 0 0 0 100 41 Z',
   },
   {
     id: 'education',
     title: 'Education',
-    text: 'We promote educational programs for doctors and other stakeholders. Our initiatives include tailored training on critical topics like being a doctor for doctors, substance and alcohol abuse, holistic wellbeing, and sustainable careers. We adapt successful international models to address local needs.',
+    text: 'Promoting training on being a doctor for doctors, substance use, holistic wellbeing and sustainable careers, adapting proven international models for Aotearoa.',
+    wedge: 'M186.6 150 A100 100 0 0 1 13.4 150 L48.9 129.5 A59 59 0 0 0 151.1 129.5 Z',
   },
 ]
 
@@ -84,35 +91,36 @@ const organisationJsonLd = {
   <section class="section mission" aria-labelledby="mission-title">
     <div class="container">
       <h2 class="mission__title" id="mission-title">Our Mission</h2>
-      <div class="mission__body">
-        <div class="mission__diagram" data-reveal>
+      <div class="mission__layout" data-mission>
+        <div class="mission__diagram">
           <Image
             class="mission__image"
             src={missionDiagram}
             alt="Diagram of the DHA values: Connections, Advocacy and Education, around the words Healthy Doctors, Sustainable Work, Safe Workplaces"
-            widths={[450, 900, 1160]}
-            sizes="(max-width: 1080px) 450px, 580px"
+            widths={[320, 440, 640, 880]}
+            sizes="(max-width: 699px) min(320px, 80vw), (max-width: 999px) 380px, 440px"
           />
-          <nav class="mission__segments" aria-label="Our pillars">
+          <svg class="mission__wedges" viewBox="0 0 200 200" aria-label="Our pillars">
             {
               pillars.map((pillar) => (
-                <a class={`mission__segment mission__segment--${pillar.id}`} href={`/about#${pillar.id}`}>
-                  <span class="visually-hidden">{pillar.title}</span>
+                <a href={`/about#${pillar.id}`} aria-label={`${pillar.title}: our objectives`} data-pillar={pillar.id}>
+                  <path class="mission__wedge" d={pillar.wedge} />
                 </a>
               ))
             }
-          </nav>
+          </svg>
         </div>
-        <dl class="mission__pillars">
-          {
-            pillars.map((pillar) => (
-              <div class="mission__pillar" data-reveal>
-                <dt class="mission__pillar-title">{pillar.title}</dt>
-                <dd class="mission__pillar-text">{pillar.text}</dd>
-              </div>
-            ))
-          }
-        </dl>
+        {
+          pillars.map((pillar) => (
+            <div class={`mission__pillar mission__pillar--${pillar.id}`} data-pillar={pillar.id} data-reveal>
+              <h3 class="mission__pillar-title">
+                <span class="mission__marker" aria-hidden="true" />
+                {pillar.title}
+              </h3>
+              <p class="mission__pillar-text">{pillar.text}</p>
+            </div>
+          ))
+        }
       </div>
     </div>
   </section>
@@ -156,6 +164,30 @@ const organisationJsonLd = {
     </div>
   </section>
 </BaseLayout>
+
+<script>
+  // Highlight a pillar's segment while its text or wedge is hovered or focused.
+  const layout = document.querySelector<HTMLElement>('[data-mission]')
+  if (layout) {
+    const pillars = layout.querySelectorAll<HTMLElement | SVGElement>('[data-pillar]')
+
+    const setActive = (id?: string) => {
+      if (id) layout.dataset.active = id
+      else delete layout.dataset.active
+      layout.querySelectorAll('.mission__pillar').forEach((pillar) => {
+        pillar.classList.toggle('is-active', (pillar as HTMLElement).dataset.pillar === id)
+      })
+    }
+
+    pillars.forEach((element) => {
+      const id = element.dataset.pillar
+      element.addEventListener('pointerenter', () => setActive(id))
+      element.addEventListener('pointerleave', () => setActive())
+      element.addEventListener('focusin', () => setActive(id))
+      element.addEventListener('focusout', () => setActive())
+    })
+  }
+</script>
 
 <style>
   /* Hero */
@@ -204,75 +236,185 @@ const organisationJsonLd = {
     font-size: 1.5rem;
   }
 
-  /* Mission */
+  /* Mission: each pillar sits beside its segment of the diagram */
   .mission__title {
     margin-bottom: var(--space-l);
   }
 
-  .mission__body {
-    display: flex;
-    align-items: center;
-    gap: var(--space-xl);
+  .mission__layout {
+    --pillar-connections: var(--color-brand);
+    --pillar-advocacy: var(--color-brand-dark);
+    --pillar-education: #3b87bc;
+
+    display: grid;
+    grid-template-areas:
+      'connections diagram advocacy'
+      '. education .';
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 440px) minmax(0, 1fr);
+    column-gap: var(--space-xl);
+    row-gap: var(--space-m);
   }
 
   .mission__diagram {
     position: relative;
-    flex: 0 1 580px;
+    grid-area: diagram;
   }
 
   .mission__image {
     width: 100%;
   }
 
-  /* Invisible clickable wedges over the three segments of the diagram. */
-  .mission__segment {
+  .mission__wedges {
     position: absolute;
     inset: 0;
-    border-radius: 50%;
+    width: 100%;
+    height: 100%;
   }
 
-  .mission__segment--advocacy {
-    clip-path: polygon(100% 0%, 50% 0%, 50% 50%, 190% 120%);
+  /* Wedges are invisible until a pillar is active; then the others fade back. */
+  .mission__wedge {
+    fill: #fff;
+    fill-opacity: 0;
+    transition: fill-opacity 0.25s ease;
   }
 
-  .mission__segment--education {
-    clip-path: polygon(50% 50%, 0% 75%, 100% 140%, 100% 75%);
+  .mission__layout[data-active] .mission__wedge {
+    fill-opacity: 0.55;
   }
 
-  .mission__segment--connections {
-    clip-path: polygon(-80% 0%, 50% 0%, 50% 50%, -80% 120%);
+  .mission__layout[data-active='connections'] [data-pillar='connections'] .mission__wedge,
+  .mission__layout[data-active='advocacy'] [data-pillar='advocacy'] .mission__wedge,
+  .mission__layout[data-active='education'] [data-pillar='education'] .mission__wedge {
+    fill-opacity: 0;
   }
 
-  .mission__segment:hover {
-    background: rgb(255 255 255 / 15%);
+  .mission__wedges a:focus-visible {
+    outline: none;
   }
 
-  .mission__pillars {
-    flex: 1;
-    display: grid;
-    gap: var(--space-l);
-    margin: 0;
+  .mission__wedges a:focus-visible .mission__wedge {
+    stroke: var(--color-focus);
+    stroke-width: 1.5;
+  }
+
+  .mission__pillar {
+    max-width: 22rem;
+    transition: opacity 0.25s ease;
+  }
+
+  .mission__layout[data-active] .mission__pillar:not([data-pillar].is-active) {
+    opacity: 0.45;
+  }
+
+  /* Connections and Advocacy sit level with their segments' midpoints, in the upper third. */
+  .mission__pillar--connections {
+    grid-area: connections;
+    align-self: start;
+    justify-self: end;
+    margin-top: 18%;
+    text-align: right;
+  }
+
+  .mission__pillar--advocacy {
+    grid-area: advocacy;
+    align-self: start;
+    margin-top: 18%;
+  }
+
+  .mission__pillar--education {
+    grid-area: education;
+    justify-self: center;
+    text-align: center;
   }
 
   .mission__pillar-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
     margin-bottom: var(--space-xs);
     color: var(--color-brand-dark);
     font-size: 1.25rem;
-    font-weight: 700;
   }
 
-  .mission__pillar-text {
-    margin: 0;
+  .mission__pillar--connections .mission__pillar-title {
+    flex-direction: row-reverse;
   }
 
-  @media (max-width: 1080px) {
-    .mission__body {
-      flex-direction: column;
+  .mission__pillar--education .mission__pillar-title {
+    justify-content: center;
+  }
+
+  .mission__marker {
+    flex: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+  }
+
+  .mission__pillar--connections .mission__marker {
+    background: var(--pillar-connections);
+  }
+
+  .mission__pillar--advocacy .mission__marker {
+    background: var(--pillar-advocacy);
+  }
+
+  .mission__pillar--education .mission__marker {
+    background: var(--pillar-education);
+  }
+
+  /* Tablet: diagram on top, the three pillars in a row beneath it. */
+  @media (max-width: 999px) {
+    .mission__layout {
+      grid-template-areas:
+        'diagram diagram diagram'
+        'connections advocacy education';
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      column-gap: var(--space-m);
     }
 
     .mission__diagram {
-      flex-basis: auto;
-      width: min(450px, 100%);
+      justify-self: center;
+      width: min(380px, 100%);
+      margin-bottom: var(--space-s);
+    }
+
+    .mission__pillar,
+    .mission__pillar--connections,
+    .mission__pillar--advocacy,
+    .mission__pillar--education {
+      align-self: start;
+      justify-self: stretch;
+      max-width: none;
+      margin-top: 0;
+      text-align: left;
+    }
+
+    .mission__pillar--connections .mission__pillar-title {
+      flex-direction: row;
+    }
+
+    .mission__pillar--education .mission__pillar-title {
+      justify-content: flex-start;
+    }
+  }
+
+  /* Phone: everything stacks. */
+  @media (max-width: 699px) {
+    .mission__layout {
+      grid-template-areas: 'diagram' 'connections' 'advocacy' 'education';
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .mission__diagram {
+      width: min(320px, 80vw);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mission__wedge,
+    .mission__pillar {
+      transition: none;
     }
   }
 
