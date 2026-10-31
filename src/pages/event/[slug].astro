@@ -181,7 +181,7 @@ const eventJsonLd = {
           event.description && (
             <section class="event-content__section" aria-labelledby="about-the-event">
               <h2 class="event-content__heading" id="about-the-event">
-                About the event
+                About the Event
               </h2>
               <RichText value={event.description} />
             </section>
@@ -193,7 +193,7 @@ const eventJsonLd = {
             <section class="event-report" aria-labelledby="event-report">
               <p class="event-report__label">After the event</p>
               <h2 class="event-content__heading" id="event-report">
-                Event report
+                Event Report
               </h2>
               <RichText value={event.report} />
             </section>
@@ -208,7 +208,7 @@ const eventJsonLd = {
           <div class="container">
             <div class="other-events__header">
               <h2 class="other-events__title" id="other-events">
-                Other upcoming events
+                Other Upcoming Events
               </h2>
               <a class="link-arrow" href="/events">
                 All events
@@ -252,9 +252,9 @@ const eventJsonLd = {
     align-items: center;
     gap: var(--space-2xs);
     margin-bottom: var(--space-xs);
-    color: rgb(255 255 255 / 85%);
-    font-size: 0.875rem;
-    font-weight: 600;
+    color: var(--color-text-inverse-muted);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
     text-decoration: none;
   }
 
@@ -273,9 +273,9 @@ const eventJsonLd = {
     border-radius: 999px;
     background: var(--color-brand);
     color: var(--color-brand-dark);
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 1px;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--letter-spacing-label);
     text-transform: uppercase;
   }
 
@@ -286,14 +286,14 @@ const eventJsonLd = {
 
   .event-hero__title {
     max-width: 22em;
-    font-size: clamp(1.875rem, 4.5vw, 3rem);
+    font-size: var(--font-size-page-title);
     line-height: 1.15;
   }
 
   .event-hero__summary {
     max-width: 44rem;
-    color: rgb(255 255 255 / 88%);
-    font-size: clamp(1rem, 1.8vw, 1.1875rem);
+    color: var(--color-text-inverse-muted);
+    font-size: var(--font-size-lead);
   }
 
   /* Body: content beside a sticky details panel */
@@ -340,7 +340,7 @@ const eventJsonLd = {
 
   .event-details__row dd {
     margin: 0;
-    font-weight: 500;
+    font-weight: var(--font-weight-medium);
     overflow-wrap: anywhere;
   }
 
@@ -395,7 +395,7 @@ const eventJsonLd = {
   .event-content__heading {
     margin-bottom: var(--space-s);
     color: var(--color-brand-dark);
-    font-size: 1.5rem;
+    font-size: var(--font-size-xl);
   }
 
   .event-report {
@@ -407,9 +407,9 @@ const eventJsonLd = {
   .event-report__label {
     margin-bottom: var(--space-2xs);
     color: var(--color-text-muted);
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 1px;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--letter-spacing-label);
     text-transform: uppercase;
   }
 
@@ -420,11 +420,6 @@ const eventJsonLd = {
     justify-content: space-between;
     gap: var(--space-s);
     margin-bottom: var(--space-l);
-  }
-
-  .other-events__title {
-    color: var(--color-brand-dark);
-    font-size: clamp(1.5rem, 3vw, 2rem);
   }
 
   /* Narrow screens: details come first, straight under the header */

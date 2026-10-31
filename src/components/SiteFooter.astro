@@ -59,9 +59,10 @@ import {footerNavigation} from '../lib/navigation'
   }
 
   .site-footer__title {
+    color: inherit;
     margin-bottom: 12px;
-    font-size: 0.875rem;
-    letter-spacing: 1px;
+    font-size: var(--font-size-sm);
+    letter-spacing: var(--letter-spacing-label);
     line-height: 16px;
     text-transform: uppercase;
   }
@@ -78,7 +79,7 @@ import {footerNavigation} from '../lib/navigation'
 
   .site-footer__link {
     color: inherit;
-    font-size: 0.875rem;
+    font-size: var(--font-size-sm);
     text-decoration: none;
   }
 
@@ -90,7 +91,7 @@ import {footerNavigation} from '../lib/navigation'
     margin-top: var(--space-l);
     padding-top: var(--space-m);
     border-top: 1px solid rgb(255 255 255 / 20%);
-    font-size: 0.75rem;
+    font-size: var(--font-size-xs);
     opacity: 0.8;
   }
 

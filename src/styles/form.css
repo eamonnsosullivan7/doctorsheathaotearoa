@@ -17,13 +17,13 @@
 }
 
 .form__label {
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
 }
 
 .form__optional {
   color: var(--color-text-muted);
-  font-weight: 400;
+  font-weight: var(--font-weight-regular);
 }
 
 .form__input,
@@ -36,7 +36,7 @@
   background: var(--color-surface);
   color: var(--color-text);
   font: inherit;
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
 }
 
 .form__input:focus,

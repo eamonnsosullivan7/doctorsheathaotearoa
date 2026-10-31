@@ -1,0 +1,88 @@
+/* ==========================================================================
+   Design tokens
+   The single place to change the site's colours, type, spacing and shape.
+   Components use these through var(--…) rather than raw values.
+   ========================================================================== */
+
+:root {
+  /* Brand */
+  --color-brand-darker: #133654;
+  --color-brand-dark: #1b4a73;
+  --color-brand: #5db6e8;
+  --color-brand-light: #d9e5ff;
+
+  /* Segment colours of the mission diagram, used wherever a pillar is shown. */
+  --color-pillar-connections: var(--color-brand);
+  --color-pillar-advocacy: var(--color-brand-dark);
+  --color-pillar-education: #3b87bc;
+
+  /* Text */
+  --color-text: #111;
+  --color-text-muted: #444;
+  --color-text-inverse: #fff;
+  --color-text-inverse-muted: rgb(255 255 255 / 85%);
+
+  /* Surfaces and lines */
+  --color-surface: #fff;
+  --color-surface-alt: #f2f5f5;
+  --color-border: #e2e2e2;
+  --color-border-strong: #ccc;
+
+  /* States */
+  --color-accent: #ffb4a2; /* "Past event" ribbon */
+  --color-focus: #4d65ff;
+  --color-success-bg: #cef5ca;
+  --color-error-bg: #fde2dd;
+
+  /* Typography */
+  --font-sans: 'Montserrat Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  --font-size-xs: 0.75rem; /* labels, badges */
+  --font-size-sm: 0.875rem; /* meta, captions, form fields */
+  --font-size-base: 1rem; /* body text */
+  --font-size-md: 1.125rem; /* intros, list titles */
+  --font-size-lg: 1.25rem; /* card titles */
+  --font-size-xl: 1.5rem; /* subsection headings */
+  --font-size-lead: clamp(1.125rem, 2vw, 1.25rem); /* hero lead lines */
+  --font-size-h3: clamp(1.375rem, 3vw, 1.75rem); /* featured card titles */
+  --font-size-h2: clamp(1.75rem, 4vw, 2.25rem); /* section headings */
+  --font-size-page-title: clamp(2rem, 5vw, 3rem); /* page header titles */
+  --font-size-display: clamp(2.5rem, 6vw, 4rem); /* homepage hero */
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  --letter-spacing-label: 1px; /* small uppercase labels */
+  --letter-spacing-wide: 2px; /* buttons */
+
+  /* Spacing */
+  --space-2xs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-s: 1rem;
+  --space-m: 1.5rem;
+  --space-l: 2rem;
+  --space-xl: 3rem;
+  --space-2xl: 4rem;
+  --space-3xl: 6rem;
+
+  /* Shape */
+  --radius-s: 4px;
+  --radius-m: 8px;
+  --radius-l: 12px;
+  --shadow-card: 0 2px 5px rgb(0 0 0 / 20%);
+
+  /* Layout */
+  --container-width: 1140px;
+  --container-narrow: 48rem;
+  --gutter: 2.5rem;
+  --header-height: 90px;
+}
+
+@media (max-width: 767px) {
+  :root {
+    --gutter: 1.25rem;
+  }
+}

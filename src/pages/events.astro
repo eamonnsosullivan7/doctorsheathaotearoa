@@ -16,7 +16,7 @@ const {upcoming, past} = splitEvents(await getEvents())
   <section class="section" aria-labelledby="upcoming-title">
     <div class="container">
       <div class="events-header">
-        <h2 class="events-header__title" id="upcoming-title">Upcoming events</h2>
+        <h2 class="events-header__title" id="upcoming-title">Upcoming Events</h2>
         <a class="link-arrow" href="#list-an-event">List your event</a>
       </div>
 
@@ -29,7 +29,7 @@ const {upcoming, past} = splitEvents(await getEvents())
       <section class="section section--alt" id="past-events" aria-labelledby="past-title">
         <div class="container container--narrow">
           <h2 class="events-header__title" id="past-title">
-            Past events
+            Past Events
           </h2>
           <p class="past__intro">Earlier events we've listed, with write-ups where available.</p>
           <PastEventList events={past} />
@@ -40,7 +40,7 @@ const {upcoming, past} = splitEvents(await getEvents())
 
   <section class="section" id="list-an-event" aria-labelledby="list-an-event-title">
     <div class="container container--narrow">
-      <h2 class="list-event__title" id="list-an-event-title">Hosting an event? Let us know!</h2>
+      <h2 class="list-event__title" id="list-an-event-title">Hosting an Event? Let Us Know!</h2>
       <p class="list-event__intro">
         Share details about your upcoming event and connect with others in the healthcare community.
       </p>
@@ -61,18 +61,12 @@ const {upcoming, past} = splitEvents(await getEvents())
     margin-bottom: var(--space-l);
   }
 
-  .events-header__title {
-    color: var(--color-brand-dark);
-    font-size: clamp(1.75rem, 4vw, 2.25rem);
-  }
-
   .past__intro {
     margin-block: var(--space-xs) var(--space-l);
     color: var(--color-text-muted);
   }
 
   .list-event__title {
-    font-size: clamp(1.5rem, 3vw, 2rem);
     text-align: center;
   }
 

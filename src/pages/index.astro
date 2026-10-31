@@ -108,7 +108,7 @@ const organisationJsonLd = {
   <section class="section section--alt" aria-labelledby="events-title">
     <div class="container">
       <div class="home-events__header">
-        <h2 class="home-events__title" id="events-title">Upcoming events</h2>
+        <h2 class="home-events__title" id="events-title">Upcoming Events</h2>
         <a class="link-arrow" href="/events">All events</a>
       </div>
       <UpcomingEvents events={upcomingEvents}>
@@ -235,11 +235,11 @@ const organisationJsonLd = {
   .home-hero__title {
     margin-block: var(--space-s);
     color: var(--color-brand);
-    font-weight: 800;
+    font-weight: var(--font-weight-extrabold);
   }
 
   .home-hero__lead {
-    font-size: 1.5rem;
+    font-size: var(--font-size-xl);
   }
 
   /* Mission: each pillar sits beside its segment of the diagram */
@@ -275,7 +275,7 @@ const organisationJsonLd = {
 
   /* Wedges are invisible until a pillar is active; then the others fade back. */
   .mission__wedge {
-    fill: #fff;
+    fill: var(--color-text-inverse);
     fill-opacity: 0;
     transition: fill-opacity 0.25s ease;
   }
@@ -335,7 +335,7 @@ const organisationJsonLd = {
     gap: var(--space-xs);
     margin-bottom: var(--space-xs);
     color: var(--color-brand-dark);
-    font-size: 1.25rem;
+    font-size: var(--font-size-lg);
   }
 
   .mission__pillar--connections .mission__pillar-title {
@@ -428,25 +428,20 @@ const organisationJsonLd = {
     margin-bottom: var(--space-l);
   }
 
-  .home-events__title {
-    color: var(--color-brand-dark);
-  }
-
   .home-events__past {
     margin-top: var(--space-m);
   }
 
   .home-events__cta {
     margin-top: var(--space-l);
-    font-size: 1.25rem;
-    font-weight: 700;
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
     text-align: center;
   }
 
   /* Support overview: one card per support page category */
   .support-overview__title {
     margin-bottom: var(--space-m);
-    font-size: clamp(1.5rem, 3vw, 2rem);
   }
 
   .support-overview__intro {
@@ -492,7 +487,7 @@ const organisationJsonLd = {
 
   .support-card__title {
     color: var(--color-brand-dark);
-    font-size: 1.2rem;
+    font-size: var(--font-size-lg);
     line-height: 1.4;
   }
 
@@ -519,7 +514,7 @@ const organisationJsonLd = {
   .support-card__preview {
     align-self: start;
     width: 100%;
-    font-size: 0.875rem;
+    font-size: var(--font-size-sm);
   }
 
   .support-card__preview:not(:empty) {
@@ -530,9 +525,9 @@ const organisationJsonLd = {
   .support-card__preview-label {
     margin-bottom: var(--space-2xs);
     color: var(--color-text-muted);
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 1px;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--letter-spacing-label);
     text-transform: uppercase;
   }
 
@@ -564,7 +559,7 @@ const organisationJsonLd = {
     justify-self: start;
     padding-top: var(--space-xs);
     color: var(--color-brand-dark);
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
   }
 
   .support-card__arrow {

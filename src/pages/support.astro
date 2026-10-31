@@ -64,7 +64,7 @@ const categories = await getSupportCategories()
     }
 
     <aside class="support__recommend">
-      <h2 class="support__recommend-title">Know a service we should list?</h2>
+      <h2 class="support__recommend-title">Know a Service We Should List?</h2>
       <p>
         If you work in a service that supports doctors' or medical students' wellbeing, we'd be happy to publish its
         details here.
@@ -89,7 +89,7 @@ const categories = await getSupportCategories()
 
 <style>
   .support__intro {
-    font-size: 1.125rem;
+    font-size: var(--font-size-md);
   }
 
   .support__toc ul {
@@ -106,8 +106,8 @@ const categories = await getSupportCategories()
     padding: var(--space-xs) var(--space-s);
     border: 1px solid var(--color-brand-dark);
     border-radius: 999px;
-    font-size: 0.875rem;
-    font-weight: 600;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
     text-decoration: none;
   }
 
@@ -127,11 +127,6 @@ const categories = await getSupportCategories()
     display: flex;
     align-items: flex-start;
     gap: var(--space-s);
-  }
-
-  .support-category__title {
-    font-size: clamp(1.5rem, 3vw, 2rem);
-    color: var(--color-brand-dark);
   }
 
   .support-category__intro {
@@ -159,6 +154,6 @@ const categories = await getSupportCategories()
   }
 
   .support__recommend-title {
-    font-size: 1.25rem;
+    font-size: var(--font-size-lg);
   }
 </style>

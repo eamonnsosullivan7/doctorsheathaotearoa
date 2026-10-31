@@ -28,7 +28,7 @@ src/
   pages/              One file per route; /event/[slug] is generated from Sanity
   layouts/            BaseLayout (head, header, footer, scroll-reveal script)
   components/         Header, footer, cards, rich text, forms
-  styles/             global.css (tokens, base, layout), form.css
+  styles/             tokens.css (design tokens), global.css (base, layout), form.css
   sanity/
     schemaTypes/      Content model
     structure.ts      Studio sidebar
@@ -37,6 +37,8 @@ sanity.config.ts      Studio config
 ```
 
 CSS uses BEM class names (`block__element--modifier`). Each component keeps its own styles in a scoped `<style>` block; only design tokens, base styles and layout primitives (`.container`, `.section`, `.button`) are global.
+
+All colours, font sizes, weights, spacing, radii and shadows are defined once in `src/styles/tokens.css` and used through `var(--…)`. Change a value there to change it site-wide, and use an existing token rather than a raw value when adding styles. Headings are written in Title Case.
 
 ## Content model
 

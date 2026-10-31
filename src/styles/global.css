@@ -1,60 +1,6 @@
 @import '@fontsource-variable/montserrat';
 @import '@fontsource-variable/montserrat/wght-italic.css';
-
-/* ==========================================================================
-   Tokens
-   ========================================================================== */
-
-:root {
-  --color-brand-dark: #1b4a73;
-  --color-brand: #5db6e8;
-  --color-brand-light: #d9e5ff;
-  --color-text: #111;
-  --color-text-muted: #444;
-  --color-text-inverse: #fff;
-  --color-surface: #fff;
-  --color-surface-alt: #f2f5f5;
-  --color-border: #e2e2e2;
-  --color-border-strong: #ccc;
-  --color-accent: #ffb4a2;
-  --color-focus: #4d65ff;
-  --color-success-bg: #cef5ca;
-
-  /* Segment colours of the mission diagram, used wherever a pillar is shown. */
-  --color-pillar-connections: var(--color-brand);
-  --color-pillar-advocacy: var(--color-brand-dark);
-  --color-pillar-education: #3b87bc;
-  --color-error-bg: #fde2dd;
-
-  --font-sans: 'Montserrat Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-
-  --space-2xs: 0.25rem;
-  --space-xs: 0.5rem;
-  --space-s: 1rem;
-  --space-m: 1.5rem;
-  --space-l: 2rem;
-  --space-xl: 3rem;
-  --space-2xl: 4rem;
-  --space-3xl: 6rem;
-
-  --radius-s: 4px;
-  --radius-m: 8px;
-  --radius-l: 12px;
-  --radius-xl: 30px;
-
-  --shadow-card: 0 2px 5px rgb(0 0 0 / 20%);
-
-  --container-width: 1140px;
-  --container-narrow: 48rem;
-  --gutter: 2.5rem;
-  --header-height: 90px;
-}
-
-@media (max-width: 767px) {
-  :root {
-    --gutter: 1.25rem;
-  }
-}
+@import './tokens.css';
 
 /* ==========================================================================
    Base
@@ -80,7 +26,7 @@ html {
 body {
   margin: 0;
   font-family: var(--font-sans);
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   line-height: 1.5;
   color: var(--color-text);
   background: var(--color-surface);
@@ -105,26 +51,28 @@ h3,
 h4,
 h5,
 h6 {
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   line-height: 1.2;
 }
 
 h1 {
-  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-size: var(--font-size-display);
   line-height: 1.1;
 }
+/* Section headings: one size and colour across every page. */
 h2 {
-  font-size: clamp(2rem, 4.5vw, 3rem);
+  color: var(--color-brand-dark);
+  font-size: var(--font-size-h2);
 }
 h3 {
-  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-size: var(--font-size-h3);
 }
 h4 {
-  font-size: 1.5rem;
+  font-size: var(--font-size-xl);
   line-height: 1.4;
 }
 h5 {
-  font-size: 1.25rem;
+  font-size: var(--font-size-lg);
   line-height: 1.5;
 }
 
@@ -183,10 +131,10 @@ a {
   background: var(--color-brand-dark);
   color: var(--color-text-inverse);
   font: inherit;
-  font-size: 0.75rem;
-  font-weight: 500;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
   line-height: 20px;
-  letter-spacing: 2px;
+  letter-spacing: var(--letter-spacing-wide);
   text-transform: uppercase;
   text-decoration: none;
   white-space: nowrap;
@@ -195,23 +143,23 @@ a {
 }
 
 .button:hover {
-  background: #133654;
+  background: var(--color-brand-darker);
 }
 
 .button--large {
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   letter-spacing: normal;
   text-transform: none;
 }
 
 .eyebrow {
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   color: var(--color-brand);
 }
 
 .link-arrow {
   color: var(--color-brand-dark);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
 }
 
 .visually-hidden {

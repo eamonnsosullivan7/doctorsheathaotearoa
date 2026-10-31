@@ -89,8 +89,8 @@ const externalAttrs = {target: '_blank', rel: 'noopener noreferrer'}
 
   .entries__title {
     color: var(--color-text-muted);
-    font-size: 0.75rem;
-    letter-spacing: 1px;
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--letter-spacing-label);
     text-transform: uppercase;
   }
 
@@ -134,7 +134,7 @@ const externalAttrs = {target: '_blank', rel: 'noopener noreferrer'}
   }
 
   .link-list__link {
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
     text-decoration: none;
   }
 
@@ -144,7 +144,7 @@ const externalAttrs = {target: '_blank', rel: 'noopener noreferrer'}
 
   .link-list__source {
     color: var(--color-text-muted);
-    font-size: 0.8125rem;
+    font-size: var(--font-size-sm);
   }
 
   /* Cards: title, byline/source, first paragraph, then "More about…" */
@@ -167,7 +167,7 @@ const externalAttrs = {target: '_blank', rel: 'noopener noreferrer'}
   }
 
   .entry__title {
-    font-size: 1.0625rem;
+    font-size: var(--font-size-md);
     line-height: 1.35;
   }
 
@@ -181,7 +181,7 @@ const externalAttrs = {target: '_blank', rel: 'noopener noreferrer'}
 
   .entry__meta {
     color: var(--color-text-muted);
-    font-size: 0.875rem;
+    font-size: var(--font-size-sm);
   }
 
   .entry__byline {
@@ -189,14 +189,14 @@ const externalAttrs = {target: '_blank', rel: 'noopener noreferrer'}
   }
 
   .entry__description {
-    font-size: 0.9375rem;
+    font-size: var(--font-size-base);
   }
 
   .entry__more-toggle {
     width: fit-content;
     color: var(--color-brand-dark);
-    font-size: 0.875rem;
-    font-weight: 600;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
     cursor: pointer;
   }
 

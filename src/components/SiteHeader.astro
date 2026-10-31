@@ -189,7 +189,7 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/'
     background: transparent;
     color: inherit;
     font: inherit;
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
     cursor: pointer;
   }
 
@@ -220,8 +220,8 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/'
     padding: 20px 40px 20px 20px;
     border-bottom: 1px solid var(--color-text-inverse);
     color: inherit;
-    font-size: 1.125rem;
-    font-weight: 600;
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
     text-decoration: none;
   }
 

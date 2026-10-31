@@ -31,15 +31,15 @@ const {title, lead, id} = Astro.props
   }
 
   .page-hero__title {
-    font-size: clamp(2.25rem, 5vw, 3rem);
-    font-weight: 800;
+    font-size: var(--font-size-page-title);
+    font-weight: var(--font-weight-extrabold);
   }
 
   .page-hero__lead {
     max-width: 40rem;
     margin: var(--space-s) auto 0;
-    color: rgb(255 255 255 / 88%);
-    font-size: clamp(1.0625rem, 2vw, 1.25rem);
+    color: var(--color-text-inverse-muted);
+    font-size: var(--font-size-lead);
     line-height: 1.5;
   }
 </style>
