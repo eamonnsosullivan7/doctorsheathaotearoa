@@ -19,6 +19,11 @@
   --color-accent: #ffb4a2;
   --color-focus: #4d65ff;
   --color-success-bg: #cef5ca;
+
+  /* Segment colours of the mission diagram, used wherever a pillar is shown. */
+  --color-pillar-connections: var(--color-brand);
+  --color-pillar-advocacy: var(--color-brand-dark);
+  --color-pillar-education: #3b87bc;
   --color-error-bg: #fde2dd;
 
   --font-sans: 'Montserrat Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;

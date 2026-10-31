@@ -241,10 +241,6 @@ const organisationJsonLd = {
   }
 
   .mission__layout {
-    --pillar-connections: var(--color-brand);
-    --pillar-advocacy: var(--color-brand-dark);
-    --pillar-education: #3b87bc;
-
     display: grid;
     grid-template-areas:
       'connections diagram advocacy'
@@ -351,15 +347,15 @@ const organisationJsonLd = {
   }
 
   .mission__pillar--connections .mission__marker {
-    background: var(--pillar-connections);
+    background: var(--color-pillar-connections);
   }
 
   .mission__pillar--advocacy .mission__marker {
-    background: var(--pillar-advocacy);
+    background: var(--color-pillar-advocacy);
   }
 
   .mission__pillar--education .mission__marker {
-    background: var(--pillar-education);
+    background: var(--color-pillar-education);
   }
 
   /* Tablet: diagram on top, the three pillars in a row beneath it. */

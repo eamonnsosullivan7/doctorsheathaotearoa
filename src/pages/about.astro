@@ -45,55 +45,43 @@ const pillars = [
 ---
 
 <BaseLayout title="About" description="Our mission, history and the team behind Doctors Health Aotearoa.">
-  <PageHero title="About Us" />
+  <PageHero
+    id="mission"
+    title="About Us"
+    lead="Our mission is to improve the health and wellbeing of doctors and medical students for the good of all New Zealanders."
+  />
 
-  <section class="section--compact" id="mission" aria-labelledby="mission-title">
-    <div class="container statement">
-      <h2 class="statement__title" id="mission-title">Our Mission</h2>
-      <p class="statement__text">
-        Our mission is to improve the health and wellbeing of doctors and medical students for the good of all New
-        Zealanders.
-      </p>
-    </div>
-  </section>
-
-  <section class="section" aria-label="Our pillars">
-    <ul class="container pillars" role="list">
-      {
-        pillars.map((pillar) => (
-          <li class="flip-card" id={pillar.id} data-flip-card data-reveal>
-            <div class="flip-card__inner">
-              <div class="flip-card__face flip-card__face--front">
-                <Image class="flip-card__background" src={pillar.image} alt="" widths={[400, 800]} sizes="(max-width: 900px) 90vw, 360px" />
-                <h3 class="flip-card__title">{pillar.title}</h3>
-                <button class="flip-card__toggle" type="button" aria-expanded="false" data-flip-open>
-                  <span class="visually-hidden">Show {pillar.title} objectives</span>
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7v10M7 12h10" /></svg>
-                </button>
-              </div>
-              <div class="flip-card__face flip-card__face--back" inert>
-                <div class="flip-card__back-header">
-                  <Image class="flip-card__thumb" src={pillar.image} alt="" width={64} height={64} />
-                  <div>
-                    <h3 class="flip-card__heading">{pillar.title}</h3>
-                    <p class="flip-card__subheading">Our objectives</p>
-                  </div>
-                </div>
-                <ul class="flip-card__objectives">
+  <section class="section" aria-labelledby="pillars-title">
+    <div class="container">
+      <header class="pillars-header">
+        <h2 class="pillars-header__title" id="pillars-title">How we work</h2>
+        <p class="pillars-header__intro">Three pillars guide everything we do.</p>
+      </header>
+      <ul class="pillars" role="list">
+        {
+          pillars.map((pillar) => (
+            <li class={`pillar-card pillar-card--${pillar.id}`} id={pillar.id} data-reveal>
+              <Image
+                class="pillar-card__image"
+                src={pillar.image}
+                alt=""
+                widths={[400, 720]}
+                sizes="(max-width: 699px) 90vw, (max-width: 999px) 45vw, 360px"
+              />
+              <div class="pillar-card__body">
+                <h3 class="pillar-card__title">{pillar.title}</h3>
+                <p class="pillar-card__label">Our objectives</p>
+                <ul class="pillar-card__objectives">
                   {pillar.objectives.map((objective) => (
                     <li>{objective}</li>
                   ))}
                 </ul>
-                <button class="flip-card__toggle" type="button" data-flip-close>
-                  <span class="visually-hidden">Hide {pillar.title} objectives</span>
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 12h10" /></svg>
-                </button>
               </div>
-            </div>
-          </li>
-        ))
-      }
-    </ul>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
   </section>
 
   <section class="section section--alt" id="history" aria-labelledby="history-title">
@@ -162,194 +150,96 @@ const pillars = [
   </section>
 </BaseLayout>
 
-<script>
-  document.querySelectorAll<HTMLElement>('[data-flip-card]').forEach((card) => {
-    const front = card.querySelector<HTMLElement>('.flip-card__face--front')!
-    const back = card.querySelector<HTMLElement>('.flip-card__face--back')!
-    const open = card.querySelector<HTMLButtonElement>('[data-flip-open]')!
-    const close = card.querySelector<HTMLButtonElement>('[data-flip-close]')!
-
-    function setFlipped(flipped: boolean) {
-      card.classList.toggle('flip-card--flipped', flipped)
-      open.setAttribute('aria-expanded', String(flipped))
-      front.inert = flipped
-      back.inert = !flipped
-      ;(flipped ? close : open).focus({preventScroll: true})
-    }
-
-    open.addEventListener('click', () => setFlipped(true))
-    close.addEventListener('click', () => setFlipped(false))
-  })
-</script>
-
 <style>
-  /* Mission statement */
-  .statement {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-xl);
+  /* Pillars: image, colour bar matching the homepage diagram, then objectives */
+  .pillars-header {
+    margin-bottom: var(--space-l);
+    text-align: center;
   }
 
-  .statement__title {
-    flex: none;
-    font-size: 1.75rem;
+  .pillars-header__title {
+    color: var(--color-brand-dark);
+    font-size: clamp(1.75rem, 4vw, 2.25rem);
   }
 
-  .statement__text {
-    max-width: 36rem;
-    padding-left: var(--space-xl);
-    border-left: 1px solid var(--color-border-strong);
-    font-size: 1.25rem;
+  .pillars-header__intro {
+    margin-top: var(--space-xs);
+    color: var(--color-text-muted);
+    font-size: 1.125rem;
   }
 
-  @media (max-width: 767px) {
-    .statement {
-      flex-direction: column;
-      gap: var(--space-m);
-      text-align: center;
-    }
-
-    .statement__text {
-      padding: var(--space-m) 0 0;
-      border-left: 0;
-      border-top: 1px solid var(--color-border-strong);
-    }
-  }
-
-  /* Flip cards */
   .pillars {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
     gap: var(--space-m);
-    margin-block: 0;
+    margin: 0;
+    padding: 0;
     list-style: none;
   }
 
-  .flip-card {
-    perspective: 1000px;
+  .pillar-card {
+    --pillar-colour: var(--color-pillar-connections);
+
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-l);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-card);
     scroll-margin-top: var(--space-l);
   }
 
-  .flip-card__inner {
-    position: relative;
-    height: 600px;
-    border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-card);
-    transform-style: preserve-3d;
-    transition: transform 0.6s ease;
+  .pillar-card--advocacy {
+    --pillar-colour: var(--color-pillar-advocacy);
   }
 
-  .flip-card--flipped .flip-card__inner {
-    transform: rotateY(180deg);
+  .pillar-card--education {
+    --pillar-colour: var(--color-pillar-education);
   }
 
-  .flip-card__face {
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-    border-radius: var(--radius-xl);
-    backface-visibility: hidden;
+  /* Arriving from the homepage diagram (/about#advocacy) briefly marks the card. */
+  .pillar-card:target {
+    outline: 3px solid var(--pillar-colour);
+    outline-offset: 3px;
   }
 
-  .flip-card__face--front {
-    padding: 72px 40px;
-    color: var(--color-text-inverse);
-  }
-
-  .flip-card__face--front::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    background: linear-gradient(180deg, rgb(0 0 0 / 55%), transparent 45%);
-  }
-
-  .flip-card__background {
-    position: absolute;
-    inset: 0;
+  .pillar-card__image {
     width: 100%;
-    height: 100%;
+    aspect-ratio: 16 / 10;
     object-fit: cover;
+    border-bottom: 6px solid var(--pillar-colour);
   }
 
-  .flip-card__title {
-    position: relative;
-    z-index: 2;
-    font-size: 2rem;
+  .pillar-card__body {
+    display: grid;
+    align-content: start;
+    gap: var(--space-xs);
+    padding: var(--space-m);
   }
 
-  .flip-card__face--back {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-s);
-    padding: 30px var(--space-m) var(--space-m);
-    background: var(--color-surface);
-    transform: rotateY(180deg);
-  }
-
-  .flip-card__back-header {
-    display: flex;
-    align-items: center;
-    gap: var(--space-s);
-  }
-
-  .flip-card__thumb {
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    object-fit: cover;
-  }
-
-  .flip-card__heading {
+  .pillar-card__title {
+    color: var(--color-brand-dark);
     font-size: 1.5rem;
   }
 
-  .flip-card__subheading {
+  .pillar-card__label {
     color: var(--color-text-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
   }
 
-  .flip-card__objectives {
+  .pillar-card__objectives {
     display: grid;
     gap: var(--space-s);
+    margin: var(--space-xs) 0 0;
     padding-left: 1.2em;
   }
 
-  .flip-card__toggle {
-    position: absolute;
-    right: var(--space-m);
-    bottom: var(--space-m);
-    z-index: 2;
-    display: grid;
-    place-items: center;
-    width: 36px;
-    height: 36px;
-    padding: 0;
-    border: 0;
-    border-radius: 50%;
-    background: var(--color-surface);
-    color: var(--color-text);
-    cursor: pointer;
-  }
-
-  .flip-card__face--back .flip-card__toggle {
-    background: var(--color-text);
-    color: var(--color-surface);
-  }
-
-  .flip-card__toggle svg {
-    width: 20px;
-    height: 20px;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 2.5;
-    stroke-linecap: round;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .flip-card__inner {
-      transition: none;
-    }
+  .pillar-card__objectives li::marker {
+    color: var(--pillar-colour);
   }
 
   /* History */
