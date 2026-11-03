@@ -25,3 +25,6 @@ pnpm-debug.log*
 
 # Sanity dataset exports
 backups/
+
+# Wrangler local dev state
+.wrangler/

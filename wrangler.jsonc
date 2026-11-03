@@ -1,0 +1,14 @@
+// Cloudflare Workers static-asset hosting for the Astro build.
+// https://developers.cloudflare.com/workers/static-assets/
+{
+  "name": "doctorsheathaotearoa",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    // Serve /about from about/index.html without redirecting to /about/,
+    // matching the links the site generates.
+    "html_handling": "drop-trailing-slash",
+    // Unknown URLs get the site's own 404 page.
+    "not_found_handling": "404-page"
+  }
+}

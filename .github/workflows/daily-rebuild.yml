@@ -1,0 +1,25 @@
+# Rebuilds the site once a day so events move from "Upcoming" to "Past" on
+# time (that split is worked out at build time). Calls the Cloudflare deploy
+# hook stored in the CLOUDFLARE_DEPLOY_HOOK repository secret.
+name: Daily rebuild
+
+on:
+  schedule:
+    # 13:00 UTC = 1–2am in New Zealand, depending on daylight saving.
+    - cron: '0 13 * * *'
+  # Also allows running it by hand from the Actions tab.
+  workflow_dispatch:
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Cloudflare build
+        env:
+          DEPLOY_HOOK: ${{ secrets.CLOUDFLARE_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$DEPLOY_HOOK" ]; then
+            echo "CLOUDFLARE_DEPLOY_HOOK secret is not set" >&2
+            exit 1
+          fi
+          curl --fail --silent --show-error --request POST "$DEPLOY_HOOK"
