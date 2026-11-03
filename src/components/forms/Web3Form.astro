@@ -5,25 +5,115 @@ interface Props {
   /** Email subject line Web3Forms uses for the notification. */
   subject: string
   submitLabel?: string
+  /** Shown in place of the form once it has been sent. */
+  successTitle?: string
+  successMessage?: string
+  /** Label for the button that brings the form back after sending. */
+  againLabel?: string
   id?: string
 }
 
-const {subject, submitLabel = 'Send message', id} = Astro.props
+const {
+  subject,
+  submitLabel = 'Send message',
+  successTitle = 'Message sent',
+  successMessage = "Thank you for getting in touch. We'll get back to you soon.",
+  againLabel = 'Send another message',
+  id,
+} = Astro.props
 
 // Set PUBLIC_WEB3FORMS_ACCESS_KEY in .env (see .env.example).
 const accessKey = import.meta.env.PUBLIC_WEB3FORMS_ACCESS_KEY ?? ''
 ---
 
-<form class="form" id={id} action="https://api.web3forms.com/submit" method="POST" data-web3form>
+{/* Submits in the background and reports the result in place. Without
+    JavaScript it falls back to a normal POST to Web3Forms. */}
+<form
+  class="form"
+  id={id}
+  action="https://api.web3forms.com/submit"
+  method="POST"
+  data-web3form
+  data-success-title={successTitle}
+  data-success-message={successMessage}
+>
   <input type="hidden" name="access_key" value={accessKey} />
   <input type="hidden" name="subject" value={subject} />
   <input type="hidden" name="from_name" value="Doctors Health Aotearoa website" />
   <input class="form__honeypot" type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" />
 
-  <slot />
+  <div class="form__fields" data-form-fields>
+    <slot />
 
-  <div class="form__actions">
-    <button class="button button--large" type="submit">{submitLabel}</button>
+    <div class="form__actions">
+      <button class="button button--large" type="submit" data-form-submit>{submitLabel}</button>
+    </div>
   </div>
-  <p class="form__status" role="status" aria-live="polite" data-form-status></p>
+
+  <div class="form__status" role="status" aria-live="polite" tabindex="-1" data-form-status></div>
+
+  <button class="button form__again" type="button" hidden data-form-again>{againLabel}</button>
 </form>
+
+<script>
+  const errorMessage =
+    "Sorry, your message couldn't be sent. Please try again, or email us at medicaldirector-DHA@outlook.co.nz."
+
+  document.querySelectorAll<HTMLFormElement>('[data-web3form]').forEach((form) => {
+    const fields = form.querySelector<HTMLElement>('[data-form-fields]')!
+    const status = form.querySelector<HTMLElement>('[data-form-status]')!
+    const submit = form.querySelector<HTMLButtonElement>('[data-form-submit]')!
+    const again = form.querySelector<HTMLButtonElement>('[data-form-again]')!
+    const submitLabel = submit.textContent
+
+    function showStatus(kind: 'success' | 'error', title: string | null, message: string) {
+      status.className = `form__status form__status--${kind}`
+      status.replaceChildren()
+      if (title) {
+        const heading = document.createElement('p')
+        heading.className = 'form__status-title'
+        heading.textContent = title
+        status.append(heading)
+      }
+      const text = document.createElement('p')
+      text.textContent = message
+      status.append(text)
+      status.focus()
+    }
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault()
+      submit.disabled = true
+      submit.textContent = 'Sending…'
+      status.replaceChildren()
+
+      try {
+        const response = await fetch(form.action, {
+          method: 'POST',
+          headers: {Accept: 'application/json'},
+          body: new FormData(form),
+        })
+        const result = await response.json().catch(() => ({}))
+        if (!response.ok || !result.success) throw new Error(result.message ?? response.statusText)
+
+        form.reset()
+        fields.hidden = true
+        again.hidden = false
+        showStatus('success', form.dataset.successTitle ?? null, form.dataset.successMessage ?? '')
+      } catch {
+        showStatus('error', null, errorMessage)
+      } finally {
+        submit.disabled = false
+        submit.textContent = submitLabel
+      }
+    })
+
+    again.addEventListener('click', () => {
+      status.replaceChildren()
+      status.className = 'form__status'
+      again.hidden = true
+      fields.hidden = false
+      fields.querySelector<HTMLElement>('input, select, textarea')?.focus()
+    })
+  })
+</script>

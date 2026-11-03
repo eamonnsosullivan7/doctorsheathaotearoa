@@ -5,9 +5,11 @@ interface Props {
   subject: string
   /** Show the "reason for getting in touch" select (contact page only). */
   showReason?: boolean
+  /** Shown once the message has been sent; defaults to Web3Form's general thank-you. */
+  successMessage?: string
 }
 
-const {subject, showReason = false} = Astro.props
+const {subject, showReason = false, successMessage} = Astro.props
 
 const reasons = [
   {value: 'Seeking help', label: 'I am seeking help (individual, peer, or family member)'},
@@ -16,7 +18,7 @@ const reasons = [
 ]
 ---
 
-<Web3Form subject={subject}>
+<Web3Form subject={subject} successMessage={successMessage}>
   <div class="form__row">
     <div class="form__field">
       <label class="form__label" for="first-name">First name</label>

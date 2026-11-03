@@ -2,7 +2,13 @@
 import Web3Form from './Web3Form.astro'
 ---
 
-<Web3Form subject="New event listing request" submitLabel="Submit event">
+<Web3Form
+  subject="New event listing request"
+  submitLabel="Submit event"
+  successTitle="Event submitted"
+  successMessage="Thank you for sharing your event. We'll review it and be in touch if we need any more details."
+  againLabel="Submit another event"
+>
   <div class="form__row">
     <div class="form__field">
       <label class="form__label" for="event-title">Event title</label>
