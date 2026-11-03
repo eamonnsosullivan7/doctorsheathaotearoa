@@ -2,7 +2,7 @@
 
 Astro rebuild of [doctorshealth.co.nz](https://www.doctorshealth.co.nz) (previously Webflow), with content in Sanity.
 
-- **Site:** Astro, static output, deployed to Cloudflare Pages
+- **Site:** Astro, static output, served by a Cloudflare Worker (static assets) — preview at https://doctorsheathaotearoa.eamonnsosullivan.workers.dev
 - **CMS:** Sanity project `mq6n6kkq`, dataset `production`, Studio embedded at `/studio`
 - **Forms:** plain HTML posting to [Web3Forms](https://web3forms.com)
 
@@ -44,21 +44,33 @@ All colours, font sizes, weights, spacing, radii and shadows are defined once in
 
 | Type              | Used on                                    |
 | ----------------- | ------------------------------------------ |
-| `event`           | Home (latest 4), `/events`, `/event/<slug>` |
-| `news`            | `/news` (most recent is featured)          |
+| `event`           | Home (next 3 upcoming), `/events` (upcoming, then past by year), `/event/<slug>` |
+| `news`            | `/news` (most recent is featured, earlier items listed by year) |
 | `teamMember`      | `/about` "Meet Our Team", sorted by `order` |
 | `supportCategory` | `/support` sections, sorted by `order`     |
 | `supportResource` | `/support` collapsible entries, sorted by `order` within their category. Each has an intro plus optional `entries` (services, podcasts, books, papers…): title-and-link-only entries render as a compact link grid, entries with a byline or description render as cards |
 
 The static page copy (home, about, contact, donate intros) lives in the `.astro` files.
 
-## Deploying to Cloudflare Pages
+## Deployment
 
-1. Connect the repository in Cloudflare Pages: build command `npm run build`, output directory `dist`.
-2. Set the `PUBLIC_WEB3FORMS_ACCESS_KEY` environment variable.
-3. Create a deploy hook (Settings → Builds → Deploy hooks) and add it as a Sanity webhook
-   (sanity.io/manage → API → Webhooks) so publishing content triggers a rebuild.
-4. Add the production URL to Sanity's CORS origins **with credentials** so `/studio` can log in:
-   `npx sanity cors add https://<your-domain> --credentials`
+The site is hosted as a Cloudflare Worker serving the built `dist` folder, configured in `wrangler.jsonc` (clean URLs without trailing slashes, and the site's own 404 page). The Worker is connected to this GitHub repository and rebuilds on every push to `main`.
 
-Past/upcoming event badges are worked out at build time, so a scheduled rebuild (e.g. a daily cron hitting the deploy hook) keeps them current.
+Worker settings (Cloudflare → Workers & Pages → the Worker → Settings → Build):
+
+- **Build command:** `npm run build`; **deploy command:** `npx wrangler deploy`
+- **Build variables:** `PUBLIC_WEB3FORMS_ACCESS_KEY` (the forms need it at build time) and `NODE_VERSION` = `22`
+- **Deploy hook:** "Sanity publish", used by the two rebuild triggers below
+
+Rebuild triggers:
+
+- **Publishing in Sanity** — a webhook (sanity.io/manage → API → Webhooks) calls the deploy hook when an event, news item, team member or support item is created, updated or deleted.
+- **Nightly** — `.github/workflows/daily-rebuild.yml` calls the deploy hook (repository secret `CLOUDFLARE_DEPLOY_HOOK`) so events move from upcoming to past on time, as that split is worked out at build time. It can also be run by hand from the repo's Actions tab.
+
+Any URL that serves `/studio` must be in Sanity's CORS origins **with credentials** for the Studio login to work:
+
+```sh
+npx sanity cors add https://<domain> --credentials
+```
+
+When moving `doctorshealth.co.nz` from Webflow, add the domain under the Worker's custom domains and to Sanity CORS.
