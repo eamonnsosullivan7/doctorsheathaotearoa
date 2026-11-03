@@ -13,12 +13,18 @@
 
 .form__field {
   display: grid;
+  align-content: start; /* keep inputs level when a neighbour has a hint below it */
   gap: var(--space-xs);
 }
 
 .form__label {
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
+}
+
+.form__hint {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
 }
 
 .form__optional {

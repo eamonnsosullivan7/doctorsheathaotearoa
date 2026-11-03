@@ -20,32 +20,44 @@ import Web3Form from './Web3Form.astro'
     </div>
   </div>
 
-  <div class="form__row">
+  {/* Dates use the browser's own picker; the time is free text so people can
+      give a time zone, as most listed events run outside New Zealand. */}
+  <div class="form__row" data-event-dates>
     <div class="form__field">
-      <label class="form__label" for="event-start">Start date &amp; time</label>
-      <input class="form__input" id="event-start" name="start" type="datetime-local" required />
+      <label class="form__label" for="event-start">Start date</label>
+      <input class="form__input" id="event-start" name="start_date" type="date" required data-start-date />
     </div>
     <div class="form__field">
-      <label class="form__label" for="event-end">End date &amp; time <span class="form__optional">(optional)</span></label>
-      <input class="form__input" id="event-end" name="end" type="datetime-local" />
+      <label class="form__label" for="event-end">End date <span class="form__optional">(optional)</span></label>
+      <input class="form__input" id="event-end" name="end_date" type="date" aria-describedby="event-end-hint" data-end-date />
+      <p class="form__hint" id="event-end-hint">Leave empty for one-day events.</p>
     </div>
   </div>
 
   <div class="form__row">
+    <div class="form__field">
+      <label class="form__label" for="event-time">Time &amp; time zone <span class="form__optional">(optional)</span></label>
+      <input
+        class="form__input"
+        id="event-time"
+        name="time"
+        type="text"
+        maxlength="120"
+        placeholder="e.g. 7–8pm NZT"
+        aria-describedby="event-time-hint"
+      />
+      <p class="form__hint" id="event-time-hint">Please include the time zone.</p>
+    </div>
     <div class="form__field">
       <label class="form__label" for="event-location">Location</label>
       <input class="form__input" id="event-location" name="location" type="text" maxlength="256" placeholder="Venue and city, or Online" required />
     </div>
-    <div class="form__field">
-      <label class="form__label" for="event-audience">Target audience</label>
-      <input class="form__input" id="event-audience" name="audience" type="text" maxlength="256" required />
-    </div>
   </div>
 
   <div class="form__row">
     <div class="form__field">
-      <label class="form__label" for="event-link">Event link <span class="form__optional">(optional)</span></label>
-      <input class="form__input" id="event-link" name="link" type="url" maxlength="512" placeholder="https://" />
+      <label class="form__label" for="event-audience">Target audience</label>
+      <input class="form__input" id="event-audience" name="audience" type="text" maxlength="256" required />
     </div>
     <div class="form__field">
       <label class="form__label" for="event-email">Your email</label>
@@ -54,7 +66,31 @@ import Web3Form from './Web3Form.astro'
   </div>
 
   <div class="form__field">
+    <label class="form__label" for="event-link">Event link <span class="form__optional">(optional)</span></label>
+    <input class="form__input" id="event-link" name="link" type="url" maxlength="512" placeholder="https://" />
+  </div>
+
+  <div class="form__field">
     <label class="form__label" for="event-description">Event description</label>
     <textarea class="form__textarea" id="event-description" name="description" maxlength="5000" required></textarea>
   </div>
 </Web3Form>
+
+<script>
+  // Keep the dates sensible: no start date in the past, and no end date
+  // before the start. Setting `min` also makes the end date's calendar open
+  // on the start date's month.
+  document.querySelectorAll<HTMLElement>('[data-event-dates]').forEach((dates) => {
+    const start = dates.querySelector<HTMLInputElement>('[data-start-date]')!
+    const end = dates.querySelector<HTMLInputElement>('[data-end-date]')!
+    const today = new Intl.DateTimeFormat('en-CA').format(new Date()) // YYYY-MM-DD, local time
+
+    start.min = today
+    end.min = today
+
+    start.addEventListener('change', () => {
+      end.min = start.value || today
+      if (end.value && start.value && end.value < start.value) end.value = ''
+    })
+  })
+</script>
